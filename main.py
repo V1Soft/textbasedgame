@@ -31,18 +31,22 @@ def personInteraction():
     print('You see a(n) ' + newPerson + ' in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
     if input() == 'y':
-        print()
-        print('The ' + newPerson + ' pulls out a(n) ' + npi + ' threateningly.')
-        time.sleep(1)
-        if getBestInventoryWeapon() + playerPower > getWeaponPower(npi) + peoplePower[newPerson]:
-            print('The ' + newPerson + ' has been defeated!')
-        elif getBestInventoryWeapon() == weaponPower[npi]:
-            print('Draw!')
-        else:
-            print('You\'re dead!')
-
+        fight(newPerson, npi)
     else:
         print()
+
+
+def fight(person, weapon):
+    print()
+    print('The ' + person + ' pulls out a(n) ' + weapon + ' threateningly.')
+    time.sleep(1)
+    if getBestInventoryWeapon() + playerPower > getWeaponPower(weapon) + peoplePower[person]:
+        print('The ' + person + ' has been defeated!')
+    elif getBestInventoryWeapon() == weaponPower[weapon]:
+        print('Draw!')
+    else:
+        print('You\'re dead!')
+
 
 people = ['old lady', 'baby']
 peoplePower = {'old lady': 1, 'baby': 1}
