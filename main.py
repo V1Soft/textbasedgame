@@ -36,7 +36,7 @@ def personInteraction():
         print('The ' + newPerson + ' pulls out a(n) ' + npi + ' threateningly.')
         time.sleep(1)
         if getWeaponPower(inventory[0]) > getWeaponPower(npi):
-            print(newPerson + ' has been defeated!')
+            print('The ' + newPerson + ' has been defeated!')
         elif getBestInventoryWeapon() == weaponPower[npi]:
             print('Draw!')
         else:
@@ -48,7 +48,7 @@ def personInteraction():
 people = ['old lady', 'baby']
 peopleWeapons = ['knife', 'gun', 'cane', 'fist', 'sword']
 peopleHelpers = []
-weaponPower = {'stick': 5, 'gun': 50, 'cane': 6, 'fist': 3, 'sword': 40}
+weaponPower = {'stick': 5, 'gun': 50, 'cane': 6, 'fist': 3, 'sword': 40, 'knife': 10}
 inventory = ['stick']
 health = 100
 coins = 100
