@@ -46,6 +46,23 @@ def fight(person, weapon):
     else:
         print('You\'re dead!')
 
+def commandLine():
+    print('type "help" for help')
+    while True:
+        command = input('>> ')
+        if command == 'help':
+            print('Possible commands:')
+            print('help--show this message\ninteract--find another person to interact with\nmoney--show amount of money\ninventory--list inventory items\nhealth--show health')
+        elif command == 'interact':
+            personInteraction()
+        elif command == 'money':
+            print(coins)
+        elif command == 'inventory':
+            for item in inventory:
+                print(item)
+        elif command == 'health':
+            print(health)
+
 assassin = "assassin"
 oldLady = "old lady"
 baby = "baby"
@@ -69,4 +86,5 @@ coins = 100
 playerPower = 5
 
 while True:
-    personInteraction()
+    commandLine()
+
