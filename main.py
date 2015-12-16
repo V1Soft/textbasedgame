@@ -3,9 +3,6 @@ import time, random, sys
 def choosePerson(wantedInfo):
     assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
     person = random.choice(people)
-#    if random.randint(0, 1) == 0:
-#        item = random.choice(peopleHelpers)
-#    else:
     item = random.choice(weapons)
     if wantedInfo == 'person':
         return person
