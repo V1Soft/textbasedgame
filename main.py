@@ -34,17 +34,24 @@ def personInteraction():
 
 
 def fight(person, weapon):
-    global playerPower, inventory
-    print()
+    global playerPower, inventory, coins, health
     print('The ' + person + ' pulls out a(n) ' + weapon + ' threateningly.')
     time.sleep(1)
     if getBestInventoryWeapon() + playerPower > getWeaponPower(weapon) + peoplePower[person]:
         print('The ' + person + ' has been defeated!')
+        powerToAdd = peoplePower[person] / 4
+        playerPower += powerToAdd
+        print('Your power level is now ' + str(playerPower))
+        if random.randint(1, 2) == 1:
+            inventory.append(weapon)
+            print('%s added to inventory.' %(weapon))
     elif getBestInventoryWeapon() == weaponPower[weapon]:
         print('Draw!')
-        playerPower += peoplePower[person]/4
+
     else:
         print('You\'re dead!')
+        health -= getWeaponPower(weapon) + peoplePower[person]
+        print('Your health has been decreased to %s.' %(health))
         removedItems = []
         for item in inventory:
             if random.randint(1, 2) == 1 and item != stick:
@@ -57,6 +64,9 @@ def fight(person, weapon):
                 print(item + ' dropped from inventory.')
             else:
                 print(item + ', ', end='')
+        droppedCoins = random.randint(0, int(coins / 2))
+        coins -= droppedCoins
+        print('You dropped %s coins on your death.' %(droppedCoins))
 
 
 
@@ -103,6 +113,4 @@ health = 100
 coins = 100
 playerPower = 5
 
-while True:
-    commandLine()
-
+commandLine()
