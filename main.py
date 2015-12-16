@@ -47,9 +47,12 @@ def fight(person, weapon):
     else:
         print('You\'re dead!')
 
+assassin = "assassin"
+oldlady = "old lady"
+baby = "baby"
 
-people = ['old lady', 'baby']
-peoplePower = {'old lady': 1, 'baby': 1}
+people = [oldlady, baby, assassin]
+peoplePower = {old lady: 1, baby: 1, assassin: 10}
 weapons = ['knife', 'gun', 'cane', 'fist', 'sword']
 peopleHelpers = []
 weaponPower = {'stick': 5, 'gun': 50, 'cane': 6, 'fist': 3, 'sword': 40, 'knife': 10}
