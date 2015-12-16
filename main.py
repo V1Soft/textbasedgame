@@ -34,7 +34,7 @@ def personInteraction():
 
 
 def fight(person, weapon):
-    global playerPower
+    global playerPower, inventory
     print()
     print('The ' + person + ' pulls out a(n) ' + weapon + ' threateningly.')
     time.sleep(1)
@@ -45,6 +45,20 @@ def fight(person, weapon):
         playerPower += peoplePower[person]/4
     else:
         print('You\'re dead!')
+        removedItems = []
+        for item in inventory:
+            if random.randint(1, 2) == 1 and item != stick:
+                inventory.remove(item)
+                removedItems.append(item)
+        printedItems = 0
+        for item in removedItems:
+            printedItems += 1
+            if printedItems == len(removedItems):
+                print(item + ' dropped from inventory.')
+            else:
+                print(item + ', ', end='')
+
+
 
 def commandLine():
     print('type "help" for help')
