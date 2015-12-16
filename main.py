@@ -1,6 +1,6 @@
 import time, random, sys
 
-def choosePerson(wantedInfo):
+def choosePerson(wantedInfo): # Choose person to interact with
     assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
     person = random.choice(people)
     item = random.choice(weapons)
@@ -40,12 +40,14 @@ def fight(person, weapon):
     time.sleep(1)
 
     while True:
-        health -= getWeaponPower(weapon) + peoplePower[person]
-        personHealth -= getBestInventoryWeapon() + playerPower
+        health -= getWeaponPower(weapon) + peoplePower[person] # Remove health from player
+        personHealth -= getBestInventoryWeapon() + playerPower # Remove health of opponent
         if health < 1 and personHealth < 1:
+            # In case of draw
             print('Draw!')
             break
         elif health < 1:
+            # In case of loss
             print('You\'re dead!')
             removedItems = []
             for item in inventory:
@@ -64,6 +66,7 @@ def fight(person, weapon):
             print('You dropped %s coins on your death.' %(droppedCoins))
             break
         elif personHealth < 1:
+            # In case of win
             print('The ' + person + ' has been defeated!')
             powerToAdd = peoplePower[person] / 4
             playerPower += powerToAdd
