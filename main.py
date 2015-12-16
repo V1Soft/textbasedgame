@@ -34,6 +34,7 @@ def personInteraction():
 
 
 def fight(person, weapon):
+    global playerPower
     print()
     print('The ' + person + ' pulls out a(n) ' + weapon + ' threateningly.')
     time.sleep(1)
@@ -41,21 +42,23 @@ def fight(person, weapon):
         print('The ' + person + ' has been defeated!')
     elif getBestInventoryWeapon() == weaponPower[weapon]:
         print('Draw!')
+        playerPower += peoplePower[person]/4
     else:
         print('You\'re dead!')
 
 assassin = "assassin"
-oldlady = "old lady"
+oldLady = "old lady"
 baby = "baby"
 
-people = [oldlady, baby, assassin]
-peoplePower = {oldlady: 1, baby: 1, assassin: 10}
+people = [oldLady, baby, assassin]
+peoplePower = {oldLady: 1, baby: 1, assassin: 10}
 
 knife = 'knife'
 gun = 'gun'
 cane = 'cane'
 fist = 'fist'
 sword = 'sword'
+stick = 'stick'
 
 weapons = [knife, gun, cane, fist, sword]
 peopleHelpers = []
@@ -65,5 +68,5 @@ health = 100
 coins = 100
 playerPower = 5
 
-
-personInteraction()
+while True:
+    personInteraction()
