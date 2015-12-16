@@ -35,38 +35,45 @@ def personInteraction():
 
 def fight(person, weapon):
     global playerPower, inventory, coins, health
+    personHealth = 100
     print('The ' + person + ' pulls out a(n) ' + weapon + ' threateningly.')
     time.sleep(1)
-    if getBestInventoryWeapon() + playerPower > getWeaponPower(weapon) + peoplePower[person]:
-        print('The ' + person + ' has been defeated!')
-        powerToAdd = peoplePower[person] / 4
-        playerPower += powerToAdd
-        print('Your power level is now ' + str(playerPower))
-        if random.randint(1, 2) == 1:
-            inventory.append(weapon)
-            print('%s added to inventory.' %(weapon))
-    elif getBestInventoryWeapon() == weaponPower[weapon]:
-        print('Draw!')
 
-    else:
-        print('You\'re dead!')
+    while True:
         health -= getWeaponPower(weapon) + peoplePower[person]
-        print('Your health has been decreased to %s.' %(health))
-        removedItems = []
-        for item in inventory:
-            if random.randint(1, 2) == 1 and item != stick:
-                inventory.remove(item)
-                removedItems.append(item)
-        printedItems = 0
-        for item in removedItems:
-            printedItems += 1
-            if printedItems == len(removedItems):
-                print(item + ' dropped from inventory.')
-            else:
-                print(item + ', ', end='')
-        droppedCoins = random.randint(0, int(coins / 2))
-        coins -= droppedCoins
-        print('You dropped %s coins on your death.' %(droppedCoins))
+        personHealth -= getBestInventoryWeapon() + playerPower
+        if health < 1 and personHealth < 1:
+            print('Draw!')
+            break
+        elif health < 1:
+            print('You\'re dead!')
+            removedItems = []
+            for item in inventory:
+               if random.randint(1, 2) == 1 and item != stick:
+                   inventory.remove(item)
+                   removedItems.append(item)
+            printedItems = 0
+            for item in removedItems:
+                printedItems += 1
+                if printedItems == len(removedItems):
+                   print(item + ' dropped from inventory.')
+                else:
+                   print(item + ', ', end='')
+            droppedCoins = random.randint(0, int(coins / 2))
+            coins -= droppedCoins
+            print('You dropped %s coins on your death.' %(droppedCoins))
+            break
+        elif personHealth < 1:
+            print('The ' + person + ' has been defeated!')
+            powerToAdd = peoplePower[person] / 4
+            playerPower += powerToAdd
+            print('Your power level is now ' + str(playerPower))
+            if random.randint(1, 2) == 1:
+                inventory.append(weapon)
+                print('%s added to inventory.' %(weapon))
+            break
+
+
 
 
 
