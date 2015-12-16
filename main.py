@@ -52,7 +52,11 @@ def commandLine():
         command = input('>> ')
         if command == 'help':
             print('Possible commands:')
-            print('help--show this message\ninteract--find another person to interact with\nmoney--show amount of money\ninventory--list inventory items\nhealth--show health')
+            print('help--show this message\n'
+                  'interact--find another person to interact with\n'
+                  'money--show amount of money\n'
+                  'inventory--list inventory items\n'
+                  'health--show health')
         elif command == 'interact':
             personInteraction()
         elif command == 'money':
