@@ -4,8 +4,10 @@ def choosePerson(wantedInfo): # Choose person to interact with
     assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
     person = random.choice(people)
     item = random.choice(weapons)
+
     if wantedInfo == 'person':
         return person
+
     elif wantedInfo == 'item':
         return item
 
@@ -16,9 +18,12 @@ def getWeaponPower(item):
 
 def getBestInventoryWeapon():
     bestItemPower = 0
+
     for item in inventory:
+
         if getWeaponPower(item) > bestItemPower:
             bestItemPower = getWeaponPower(item)
+
     return bestItemPower
 
 
@@ -27,8 +32,10 @@ def personInteraction():
     npi = choosePerson('item')
     print('You see a(n) ' + newPerson + ' in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
+
     if input() == 'y':
         fight(newPerson, npi)
+
     else:
         print()
 
@@ -42,42 +49,50 @@ def fight(person, weapon):
     while True:
         health -= getWeaponPower(weapon) + peoplePower[person] # Remove health from player
         personHealth -= getBestInventoryWeapon() + playerPower # Remove health of opponent
+
         if health < 1 and personHealth < 1:
             # In case of draw
             print('Draw!')
             break
+
         elif health < 1:
             # In case of loss
             print('You\'re dead!')
             removedItems = []
             for item in inventory:
+
                if random.randint(1, 2) == 1 and item != stick:
                    inventory.remove(item)
                    removedItems.append(item)
+
             printedItems = 0
             for item in removedItems:
                 printedItems += 1
+
                 if printedItems == len(removedItems):
                    print(item + ' dropped from inventory.')
                 else:
                    print(item + ', ', end='')
+
             droppedCoins = random.randint(0, int(coins / 2))
             coins -= droppedCoins
             print('You dropped %s coins on your death.' %(droppedCoins))
             break
+
         elif personHealth < 1:
+
             # In case of win
             print('The ' + person + ' has been defeated!')
             powerToAdd = peoplePower[person] / 4
             playerPower += powerToAdd
             print('Your power level is now ' + str(playerPower))
+        
             if random.randint(1, 2) == 1:
+
                 inventory.append(weapon)
                 print('%s added to inventory.' %(weapon))
+
             break
-
-
-
 
 
 def commandLine():
