@@ -81,11 +81,14 @@ def fight(person, weapon):
             if random.randint(1, 2) == 1:
                 inventory.append(weapon)
                 print('%s added to inventory.' %(weapon))
+            coinsToAdd = peoplePower[person] * 5 + random.randint(-4, 4) # Dropped coins is opponent pwr * 5 + randint
+            coins += coinsToAdd
+            print('Opponent dropped %s coins' %(coinsToAdd))
 
             break
 
-possibleCommands = ['help--show this message', 'interact--find another person to interact with', 'money--show amount of money',
-                    'inventory--list inventory items', 'health--show health']
+possibleCommands = ['help--show this message', 'interact--find another person to interact with',
+                    'money--show amount of money', 'inventory--list inventory items', 'health--show health']
 
 def commandLine():
     print('type "help" for help')
