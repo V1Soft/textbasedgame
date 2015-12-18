@@ -30,28 +30,35 @@ def personInteraction():
     npi = choosePerson('item')
     print('You see a(n) ' + newPerson + ' in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
-    if input() == 'y':
-        fight(newPerson, npi)
+    yesorno = ''
+    while True:
+        if input() == 'y':
+            fight(newPerson, npi)
+            break
 
-    else:
-        print()
+        else:
+            print()
+            break
 
 
 def fight(person, weapon):
     global playerPower, inventory, coins, health
     personHealth = 100
+    time.sleep(0.5)
     print('The ' + person + ' pulls out a(n) ' + weapon + ' threateningly.')
     time.sleep(1)
     while True:
         health -= getWeaponPower(weapon) + peoplePower[person] # Remove health from player
         personHealth -= getBestInventoryWeapon() + playerPower # Remove health of opponent
-        if health < 1 and personHealth < 1:
+        if health - (getWeaponPower(weapon) + peoplePower[person]) < 1 and personHealth - (getBestInventoryWeapon() + playerPower) < 1:
             # In case of draw
-            print('Draw!')
+            time.sleep(0.2)
+            print('You somehow managed to escape with %s health remaining.' %(health))
             break
 
         elif health < 1:
             # In case of loss
+            time.sleep(0.2)
             print('You\'re dead!')
             removedItems = []
             for item in inventory:
@@ -62,6 +69,7 @@ def fight(person, weapon):
             printedItems = 0
             for item in removedItems:
                 printedItems += 1
+                time.sleep(0.2)
                 if printedItems == len(removedItems):
                    print(item + ' dropped from inventory.')
 
@@ -70,6 +78,7 @@ def fight(person, weapon):
 
             droppedCoins = random.randint(0, int(coins / 2))
             coins -= droppedCoins
+            time.sleep(0.2)
             print('You dropped %s coins on your death.' %(droppedCoins))
             break
         elif personHealth < 1:
@@ -77,23 +86,24 @@ def fight(person, weapon):
             print('The ' + person + ' has been defeated!')
             powerToAdd = peoplePower[person] / 4
             playerPower += powerToAdd
+            time.sleep(0.2)
             print('Your power level is now ' + str(playerPower))
             if random.randint(1, 2) == 1:
                 inventory.append(weapon)
+                time.sleep(0.2)
                 print('%s added to inventory.' %(weapon))
             coinsToAdd = peoplePower[person] * 5 + random.randint(-4, 4) # Dropped coins is opponent pwr * 5 + randint
             coins += coinsToAdd
+            time.sleep(0.2)
             print('Opponent dropped %s coins' %(coinsToAdd))
 
             break
 
-possibleCommands = ['help--show this message', 'interact--find another person to interact with',
-                    'money--show amount of money', 'inventory--list inventory items', 'health--show health']
 
 def commandLine():
     print('type "help" for help')
     while True:
-        command = input('>> ')
+        command = input(': ')
         if command == 'help':
             print('Possible commands:')
             for command in possibleCommands:
@@ -111,7 +121,17 @@ def commandLine():
 
         elif command == 'health':
             print(health)
+        elif command == 'quit':
+            print('Are you sure you want to quit?')
+            if input() == 'y':
+                sys.exit()
+            else:
+                print('Cancelled.')
+        else:
+            print('Command not found. Type "help" for help.')
 
+possibleCommands = ['help--show this message', 'interact--find another person to interact with',
+                    'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game']
 
 assassin = "assassin"
 oldLady = "old lady"
@@ -133,6 +153,6 @@ weaponPower = {stick: 5, gun: 50, cane: 6, fist: 3, sword: 40, knife: 10}
 inventory = [stick]
 health = 100
 coins = 100
-playerPower = 5
+playerPower = float(5)
 
 commandLine()
