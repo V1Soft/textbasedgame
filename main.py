@@ -30,7 +30,6 @@ def personInteraction():
     npi = choosePerson('item')
     print('You see a(n) ' + newPerson + ' in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
-    yesorno = ''
     while True:
         if input() == 'y':
             fight(newPerson, npi)
