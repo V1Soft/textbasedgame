@@ -11,16 +11,12 @@ def choosePerson(wantedInfo): # Choose person to interact with
         return item
 
 
-def getWeaponPower(item):
-    return weaponPower[item]
-
-
 def getBestInventoryWeapon():
     bestItemPower = 0
-
-    for item in inventory:
-        if getWeaponPower(item) > bestItemPower:
-            bestItemPower = getWeaponPower(item)
+    for weapon in inventory:
+		weapPwr = weaponPower[item]
+        if weapPwr > bestItemPower:
+            bestItemPower = weapPwr
 
     return bestItemPower
 
@@ -47,9 +43,9 @@ def fight(person, weapon):
     print('The ' + person + ' pulls out a(n) ' + weapon + ' threateningly.')
     time.sleep(1)
     while True:
-        health -= getWeaponPower(weapon) + peoplePower[person] # Remove health from player
+        health -= weaponPower[weapon] + peoplePower[person] # Remove health from player
         personHealth -= getBestInventoryWeapon() + playerPower # Remove health of opponent
-        if health - (getWeaponPower(weapon) + peoplePower[person]) < 1 and personHealth - (getBestInventoryWeapon() + playerPower) < 1:
+        if health - (weaponPower[weapon] + peoplePower[person]) < 1 and personHealth - (getBestInventoryWeapon() + playerPower) < 1:
             # In case of draw
             time.sleep(0.2)
             print('You somehow managed to escape with %s health remaining.' %(health))
