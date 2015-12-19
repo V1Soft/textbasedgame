@@ -100,51 +100,58 @@ def commandLine():
     global saveFile, playerPower, coins, health, inventory
     print('Type "help" for help.')
     while True:
-        command = input(': ')
-        if command == 'help':
-            print('Possible commands:')
-            for command in possibleCommands:
-                print(command)
+        try:
+            command = input(': ')
+            if command == 'help':
+                print('Possible commands:')
+                for command in possibleCommands:
+                    print(command)
 
-        elif command == 'interact':
-            personInteraction()
+            elif command == 'interact':
+                personInteraction()
 
-        elif command == 'money':
-            print(coins)
+            elif command == 'money':
+                print(coins)
 
-        elif command == 'inventory':
-            for item in inventory:
-                print(item)
+            elif command == 'inventory':
+                for item in inventory:
+                    print(item)
 
-        elif command == 'health':
-            print(health)
+            elif command == 'health':
+                print(health)
             
-        elif command == 'quit':
-            print('Are you sure you want to quit? Your progress will be saved.')
-            if input() == 'y':
-                print('Saving progress...')
-                saveFile['inventory'] = inventory
-                saveFile['health'] = health
-                saveFile['playerPower'] = playerPower
-                saveFile['coins'] = coins
-                saveFile['firstTime'] = False
-                print('Progress saved.')
-                sys.exit()
-            else:
-                print('Cancelled.')
+            elif command == 'quit':
+                print('Are you sure you want to quit? Your progress will be saved.')
+                if input() == 'y':
+                    quitGame()
+                else:
+                    print('Cancelled.')
          
-        elif command == 'reset':
-            saveFile['firstTime'] = True
-        else:
-            print('Command not found. Type "help" for help.')
-        if saveFile['firstTime']:
-            inventory = [stick]
-            health = 100
-            coins = 100
-            playerPower = float(5)
-            print('New game set up. Welcome!')
-            saveFile['firstTime'] = False
+            elif command == 'reset':
+                saveFile['firstTime'] = True
+            else:
+                print('Command not found. Type "help" for help.')
+            if saveFile['firstTime']:
+                inventory = [stick]
+                health = 100
+                coins = 100
+                playerPower = float(5)
+                print('New game set up. Welcome!')
+                saveFile['firstTime'] = False
+        except KeyboardInterrupt:
+            quitGame()
 
+def quitGame():
+        print('Saving progress...')
+        saveFile['inventory'] = inventory
+        saveFile['health'] = health
+        saveFile['playerPower'] = playerPower
+        saveFile['coins'] = coins
+        saveFile['firstTime'] = False
+        print('Progress saved.')
+        sys.exit()
+        
+        
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
                     'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress']
