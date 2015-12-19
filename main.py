@@ -1,4 +1,6 @@
-import time, random, sys
+#!/usr/bin/python3
+
+import time, random, sys, shelve
 
 def choosePerson(wantedInfo): # Choose person to interact with
     assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
@@ -14,10 +16,9 @@ def choosePerson(wantedInfo): # Choose person to interact with
 def getBestInventoryWeapon():
     bestItemPower = 0
     for weapon in inventory:
-		weapPwr = weaponPower[item]
+        weapPwr = weaponPower[weapon]
         if weapPwr > bestItemPower:
             bestItemPower = weapPwr
-
     return bestItemPower
 
 
@@ -96,7 +97,8 @@ def fight(person, weapon):
 
 
 def commandLine():
-    print('type "help" for help')
+    global saveFile, playerPower, coins, health, inventory
+    print('Type "help" for help.')
     while True:
         command = input(': ')
         if command == 'help':
@@ -116,17 +118,36 @@ def commandLine():
 
         elif command == 'health':
             print(health)
+            
         elif command == 'quit':
-            print('Are you sure you want to quit?')
+            print('Are you sure you want to quit? Your progress will be saved.')
             if input() == 'y':
+                print('Saving progress...')
+                saveFile['inventory'] = inventory
+                saveFile['health'] = health
+                saveFile['playerPower'] = playerPower
+                saveFile['coins'] = coins
+                saveFile['firstTime'] = False
+                print('Progress saved.')
                 sys.exit()
             else:
                 print('Cancelled.')
+         
+        elif command == 'reset':
+            saveFile['firstTime'] = True
         else:
             print('Command not found. Type "help" for help.')
+        if saveFile['firstTime']:
+            inventory = [stick]
+            health = 100
+            coins = 100
+            playerPower = float(5)
+            print('New game set up. Welcome!')
+            saveFile['firstTime'] = False
 
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
-                    'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game']
+                    'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
+                    'reset--reset progress']
 
 assassin = "assassin"
 oldLady = "old lady"
@@ -145,9 +166,14 @@ stick = 'stick'
 weapons = [knife, gun, cane, fist, sword]
 peopleHelpers = []
 weaponPower = {stick: 5, gun: 50, cane: 6, fist: 3, sword: 40, knife: 10}
-inventory = [stick]
-health = 100
-coins = 100
-playerPower = float(5)
+
+saveFile = shelve.open('savefile')
+
+if not saveFile['firstTime']:
+    inventory = saveFile['inventory']
+    health = saveFile['health']
+    coins = saveFile['coins']
+    playerPower = saveFile['playerPower']
+    print('Previous game save loaded.')
 
 commandLine()
