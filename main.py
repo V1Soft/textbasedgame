@@ -128,7 +128,11 @@ def commandLine():
                     print('Cancelled.')
          
             elif command == 'reset':
-                saveFile['firstTime'] = True
+                print('Are you sure you want to reset all data?')
+                if input() == 'y':
+                    saveFile['firstTime'] = True
+                else:
+                    print('Cancelled.')
             else:
                 print('Command not found. Type "help" for help.')
             if saveFile['firstTime']:
@@ -138,7 +142,7 @@ def commandLine():
                 playerPower = float(5)
                 print('New game set up. Welcome!')
                 saveFile['firstTime'] = False
-        except KeyboardInterrupt:
+        except KeyboardInterrupt or EOFError:
             quitGame()
 
 def quitGame():
