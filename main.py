@@ -1,7 +1,7 @@
 #!/usr/bin/python3
+
 import time, random, sys, shelve
 from obj import *
-saveFile = shelve.open('savefile')
 
 def choosePerson(wantedInfo): # Choose person to interact with
     assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
@@ -12,6 +12,7 @@ def choosePerson(wantedInfo): # Choose person to interact with
 
     elif wantedInfo == 'item':
         return item
+
 
 def getBestInventoryWeapon():
     bestItemPower = 0
@@ -137,13 +138,7 @@ def commandLine():
                     print('Cancelled.')
             else:
                 print('Command not found. Type "help" for help.')
-            if saveFile['firstTime']:
-               inventory = [stick]
-               health = 100
-               coins = 100
-               playerPower = float(5)
-               print('New game set up. Welcome!')
-               saveFile['firstTime'] = False
+
         except KeyboardInterrupt or EOFError:
             quitGame()
 
@@ -166,8 +161,7 @@ assassin = Enemy('assassin', 10)
 oldLady = Enemy('oldLady', 1)
 baby = Enemy('baby', 1)
                                                  
-people = [oldLady, baby, assassin]              
-                                                 
+people = [oldLady, baby, assassin]
 stick = Weapon('stick', 5) 
 gun = Weapon('gun', 50)  
 cane = Weapon('cane', 6)  
@@ -180,12 +174,23 @@ peopleHelpers = []
 inventory = [stick]                              
                                                  
 hero = Player('nil', 100, 100, 5)                       
-                                                 
-if not saveFile['firstTime']:
+
+saveFile = shelve.open('savefile')
+if len(sys.argv) < 2:
+    print('arg error')
+    sys.exit()
+if sys.argv[1] == 'reset':
+    inventory = [stick]
+    health = 100
+    coins = 100
+    playerPower = float(5)
+    print('New game set up. Welcome!')
+    saveFile['firstTime'] = False
+else:
     inventory = saveFile['inventory']
     health = saveFile['health']
     coins = saveFile['coins']
     playerPower = saveFile['playerPower']
     print('Previous game save loaded.')
 
-commandLine()                                    
+commandLine()

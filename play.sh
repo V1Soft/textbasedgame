@@ -1,7 +1,17 @@
-#!/bin/bash
+#!/usr/bin/python3
 
-echo "Welcome to textbasedgame!"
-echo "This game is released under the GPL."
-echo "Copyright V1Soft 2015"
+import os, shelve
 
-python3 main.py
+print('Welcome to textbasedgame!')
+print('This game is released under the GPL.')
+print('Copyright V1Soft 2015')
+
+print('Do you want to 1. continue from a previous save or 2. start over?')
+choice = input()
+if choice.startswith('2'):
+    # shelf = shelve.open('savefile')
+    # shelf['firstTime'] = True
+    # shelf.close()
+    os.system("python3 main.py reset")
+else:
+    os.system("python3 main.py continue")
