@@ -137,13 +137,7 @@ def commandLine():
                     print('Cancelled.')
             else:
                 print('Command not found. Type "help" for help.')
-            if saveFile['firstTime']:
-                inventory = [stick]
-                health = 100
-                coins = 100
-                playerPower = float(5)
-                print('New game set up. Welcome!')
-                saveFile['firstTime'] = False
+
         except KeyboardInterrupt or EOFError:
             quitGame()
 
@@ -181,8 +175,17 @@ peopleHelpers = []
 weaponPower = {stick: 5, gun: 50, cane: 6, fist: 3, sword: 40, knife: 10}
 
 saveFile = shelve.open('savefile')
-
-if not saveFile['firstTime']:
+if len(sys.argv) < 2:
+    print('arg error')
+    sys.exit()
+if sys.argv[1] == 'reset':
+    inventory = [stick]
+    health = 100
+    coins = 100
+    playerPower = float(5)
+    print('New game set up. Welcome!')
+    saveFile['firstTime'] = False
+else:
     inventory = saveFile['inventory']
     health = saveFile['health']
     coins = saveFile['coins']
