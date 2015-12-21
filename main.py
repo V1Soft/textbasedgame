@@ -122,14 +122,16 @@ def commandLine():
             
             elif command == 'quit':
                 print('Are you sure you want to quit? Your progress will be saved.')
-                if input() == 'y':
+                choice = input()
+                if choice == 'y' or choice == 'yes':
                     quitGame()
                 else:
                     print('Cancelled.')
          
             elif command == 'reset':
                 print('Are you sure you want to reset all data?')
-                if input() == 'y':
+                choice = input()
+                if choice == 'y' or choice == 'yes':
                     saveFile['firstTime'] = True
                 else:
                     print('Cancelled.')
