@@ -44,7 +44,6 @@ def fight(person, weapon):
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
     while True:
-        #hero.health -= weapon.power + peoplePower[person] # Remove health from player
         hero.health -= weapon.power + person.power # Remove health from player
         personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
         if hero.health - (weapon.power + person.power) < 1 and personHealth - (getBestInventoryWeapon() + hero.power) < 1:
@@ -136,13 +135,13 @@ def commandLine():
                     print('Cancelled.')
             else:
                 print('Command not found. Type "help" for help.')
-            #if saveFile['firstTime']:
-                #inventory = [stick]
-                #health = 100
-                #coins = 100
-                #playerPower = float(5)
-                #print('New game set up. Welcome!')
-                #saveFile['firstTime'] = False
+            if saveFile['firstTime']:
+               inventory = [stick]
+               health = 100
+               coins = 100
+               playerPower = float(5)
+               print('New game set up. Welcome!')
+               saveFile['firstTime'] = False
         except KeyboardInterrupt or EOFError:
             quitGame()
 
@@ -161,23 +160,11 @@ possibleCommands = ['help--show this message', 'interact--find another person to
                     'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress']
 
-#assassin = "assassin"                            
-#oldLady = "old lady"                             
-#baby = "baby"                                    
-
 assassin = Enemy('assassin', 10)
 oldLady = Enemy('oldLady', 1)
 baby = Enemy('baby', 1)
                                                  
 people = [oldLady, baby, assassin]              
-#peoplePower = {oldLady: 1, baby: 1, assassin: 10}
-                                                 
-#knife = 'knife'                                  
-#gun = 'gun'                                      
-#cane  = 'cane'                                   
-#fist  = 'fist'                                   
-#sword = 'sword'                                  
-#stick = 'stick'                                  
                                                  
 stick = Weapon('stick', 5) 
 gun = Weapon('gun', 50)  
