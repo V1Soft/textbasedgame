@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python3
 import os
 import shelve
 print("Welcome to textbasedgame!\nThis game is released under the GPL.\nCopyright V1Soft 2015")
