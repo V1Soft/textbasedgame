@@ -142,17 +142,53 @@ def commandLine():
         except KeyboardInterrupt or EOFError:
             quitGame()
 
+saveFile = shelve.open('savefile')
+
 def quitGame():
-        print('Saving progress...')
-        saveFile['inventory'] = inventory
-        saveFile['health'] = hero.health
-        saveFile['playerPower'] = hero.power
-        saveFile['coins'] = hero.money 
-        saveFile['firstTime'] = False
-        print('Progress saved.')
-        sys.exit()
-        
-        
+    print('Saving progress...')
+    saveFile['inventory'] = inventory
+    saveFile['health'] = hero.health
+    saveFile['playerPower'] = hero.power
+    saveFile['coins'] = hero.money 
+    saveFile['firstTime'] = False
+    print('Progress saved.')
+    sys.exit(0)
+
+def newGame():
+    inventory = [stick]
+    health = 100
+    coins = 100
+    playerPower = float(5)
+    print('New game set up. Welcome!')
+    saveFile['firstTime'] = False
+    commandLine()
+
+def loadGame():
+    inventory = saveFile['inventory']
+    health = saveFile['health']
+    coins = saveFile['coins']
+    playerPower = saveFile['playerPower']
+    print('Previous game save loaded.')
+    commandLine()
+
+def play():
+    while True:
+        print('+----------------------------------------------+\n| Welcome to textbasedgame!                    |\n| This game is released under the GPL.         |\n| Copyright V1Soft 2015                        |\n+----------------------------------------------+\n\nDo you want to:\n1. Start a new game (new)\n2. Continue from a previous save (continue) or\n3. Exit the game (quit)')
+        choice = input(': ')
+        if choice == 'new':
+            newGame()
+        elif choice == 'continue':
+            loadGame()
+        elif choice == 'quit':
+            sys.exit(0)
+        else:
+            while True:
+                choice = input('Invalid option: Do you want to quit (Y/n) ')
+                if choice == 'Y' or choice == 'y':
+                    sys.exit(0)
+                elif choice == 'N' or choice == 'n':
+                    break
+
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
                     'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress']
@@ -175,22 +211,11 @@ inventory = [stick]
                                                  
 hero = Player('nil', 100, 100, 5)                       
 
-saveFile = shelve.open('savefile')
 if len(sys.argv) < 2:
-    print('arg error')
-    sys.exit()
-if sys.argv[1] == 'reset':
-    inventory = [stick]
-    health = 100
-    coins = 100
-    playerPower = float(5)
-    print('New game set up. Welcome!')
-    saveFile['firstTime'] = False
-else:
-    inventory = saveFile['inventory']
-    health = saveFile['health']
-    coins = saveFile['coins']
-    playerPower = saveFile['playerPower']
-    print('Previous game save loaded.')
+    play()
+elif sys.argv[1] == 'reset':
+    newGame()
+elif sys.argv[1] == 'continue':
+    loadGame()
 
 commandLine()
