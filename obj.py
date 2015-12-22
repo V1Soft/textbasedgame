@@ -21,13 +21,17 @@ class Player(object):
         self.money += amount
         return self.money
 
+    def gain(self, amount):
+        self.power += amount
+        return self.power
+
 class Weapon(object):
     def __init__(self, name, power):
         self.name = name
         self.power = power
 
 class Enemy(object):
-    def __init__(self, name,  power):
+    def __init__(self, name, power):
         self.name = name
         self.power = power
 

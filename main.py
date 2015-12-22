@@ -45,9 +45,10 @@ def fight(person, weapon):
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
     while True:
-        hero.health -= weapon.power + person.power # Remove health from player
+        # hero.health -= weapon.power + person.power # Remove health from player
+        hero.hit(weapon.power + person.power)
         personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
-        if hero.health - (weapon.power + person.power) < 1 and personHealth - (getBestInventoryWeapon() + hero.power) < 1:
+        if hero.health - (weapon.power + person.power) < 1 and person.health - (getBestInventoryWeapon() + hero.power) < 1:
             # In case of draw
             time.sleep(0.2)
             print('You somehow managed to escape with %s health remaining.' %(hero.health))
@@ -74,23 +75,23 @@ def fight(person, weapon):
                    print(item + ', ', end='')
 
             droppedCoins = random.randint(0, int(hero.money / 2))
-            hero.money -= droppedCoins
+            hero.spend(droppedCoins)
             time.sleep(0.2)
             print('You dropped %s coins on your death.' %(droppedCoins))
             break
         elif personHealth < 1:
             # In case of win
-            print('The ' + str(person) + ' has been defeated!')
+            print('The ' + str(person.name) + ' has been defeated!')
             powerToAdd = person.power / 4
-            hero.power += powerToAdd
+            hero.gain(powerToAdd)
             time.sleep(0.2)
             print('Your power level is now ' + str(hero.power))
             if random.randint(1, 2) == 1:
                 inventory.append(weapon)
                 time.sleep(0.2)
-                print('%s added to inventory.' %(weapon))
+                print('%s added to inventory.' %(weapon.name))
             coinsToAdd = person.power * 5 + random.randint(-4, 4) # Dropped coins is opponent pwr * 5 + randint
-            hero.money += coinsToAdd
+            hero.receive(coinsToAdd)
             time.sleep(0.2)
             print('Opponent dropped %s coins' %(coinsToAdd))
 
@@ -157,10 +158,12 @@ possibleCommands = ['help--show this message', 'interact--find another person to
                     'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress']
 
+hero = Player('nil', 100, 100, 9000)                       
+
 assassin = Enemy('assassin', 10)
 oldLady = Enemy('oldLady', 1)
 baby = Enemy('baby', 1)
-                                                 
+
 people = [oldLady, baby, assassin]
 stick = Weapon('stick', 5) 
 gun = Weapon('gun', 50)  
@@ -173,8 +176,6 @@ weapons = [knife, gun, cane, fist, sword]
 peopleHelpers = []                               
 inventory = [stick]                              
                                                  
-hero = Player('nil', 100, 100, 5)                       
-
 saveFile = shelve.open('savefile')
 if len(sys.argv) < 2:
     print('arg error')
