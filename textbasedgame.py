@@ -175,18 +175,23 @@ def play():
     while True:
         print('+----------------------------------------------+\n| Welcome to textbasedgame!                    |\n| This game is released under the GPL.         |\n| Copyright V1Soft 2015                        |\n+----------------------------------------------+\n\nDo you want to:\n1. Start a new game (new)\n2. Continue from a previous save (continue) or\n3. Exit the game (quit)')
         choice = input(': ')
-        if choice == 'new':
-            newGame()
-        elif choice == 'continue':
+        if choice == 'new' or choice == '1':
+            print('Are you sure you want to reset all data?')
+            choice = input(': ')
+            if choice.upper() == 'Y' or choice == 'yes':
+                newGame()
+            else:
+                print('Cancelled.')
+        elif choice == 'continue' or choice == '2':
             loadGame()
-        elif choice == 'quit':
+        elif choice == 'quit' or choice == '3':
             sys.exit(0)
         else:
             while True:
                 choice = input('Invalid option: Do you want to quit (Y/n) ')
-                if choice == 'Y' or choice == 'y':
+                if choice.upper() == 'Y' or choice == 'yes':
                     sys.exit(0)
-                elif choice == 'N' or choice == 'n':
+                else:
                     break
 
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
