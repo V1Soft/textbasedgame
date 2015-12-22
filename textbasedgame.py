@@ -151,8 +151,10 @@ def commandLine():
                 for item in inventory:
                     if isinstance(item, Weapon):
                         print(item.name + ': ' + str(item.power) + ' power')
+                    elif isinstance(item, Food):
+                        print(item.name + ': Restores ' + str(item.hp) + ' health')
                     else:
-                        print(item)
+                        print(item.name)
 
             elif command == 'health':
                 print(hero.health)
@@ -172,6 +174,14 @@ def commandLine():
                     saveFile['firstTime'] = True
                 else:
                     print('Cancelled.')
+            elif 'eat' in command:
+                foodToEat = command[4:] # Get food out of command string
+                if foodToEat in inventory:
+                    inventory.remove(foodToEat)
+                    health += foodToEat.hp
+					
+                else:
+                    print('Food not in inventory!')
             else:
                 print('Command not found. Type "help" for help.')
 
@@ -237,7 +247,7 @@ def play():
         
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
                     'money--show amount of money', 'store--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
-                    'reset--reset progress']
+                    'reset--reset progress', 'eat <food>--consume food and restore health']
 
 hero = Player('nil', 100, 100, 9000)                       
 
@@ -258,7 +268,7 @@ bread = Food('bread', 5, 5)
 
 weapons = [knife, gun, cane, fist, sword] 
 peopleHelpers = []                               
-inventory = [stick]                              
+inventory = [stick, potato]                              
                                                  
 saveFile = shelve.open('savefile')
 
