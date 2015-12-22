@@ -97,10 +97,13 @@ def fight(person, weapon):
             break
 
 def store():
-    keeper = Vendor('test')
-    keeper.goods = {'bread': 10, 'wood': 20, 'potatoes': 30}
-    print('Welcome to the market! What would you like to buy?')
+    keeper = Vendor('foodMerchant', 'Hello! Welcome to my food store.')
+    print('Wares:')
+    keeper.goods = [bread, potato]
+    print(keeper.message)
     keeper.say(keeper.goods)
+    print('Type an item\'s name to purchase it.')
+#    print('Type "info item" for more information on an item.')
     command = input(': ')
     if input != '' or input != 'nothing':
         if command in keeper.goods:
@@ -108,8 +111,19 @@ def store():
             inventory.append(command)
             print('%s purchased for %s money.' %(command, keeper.goods[command]))
             store()
+#        elif 'info' in command:
+#			thingToGetInfoOn = command[5:]
+#			for item in keeper.goods:
+#				if item.name == thingToGetInfoOn:
+#					itemInShop = True
+#					break
+#			if not itemInShop:
+#				print('Item not found.')
+#				store()
+#			else:
+#				print('Power: )
         else:
-            print("Object not found")
+            print("Command not found.")
     else:
         commandLine()
 
@@ -136,7 +150,7 @@ def commandLine():
             elif command == 'inventory':
                 for item in inventory:
                     if isinstance(item, Weapon):
-                        print(item.name)
+                        print(item.name + ': ' + str(item.power) + ' power')
                     else:
                         print(item)
 
@@ -168,8 +182,8 @@ def quitGame():
         print('Saving progress...')
         saveFile['inventory'] = inventory
         saveFile['health'] = hero.health
-        saveFile['playerPower'] = hero.power
-        saveFile['coins'] = hero.money 
+        saveFile['heroPower'] = hero.power
+        saveFile['money'] = hero.money 
         saveFile['firstTime'] = False
         print('Progress saved.')
         sys.exit()
@@ -188,8 +202,8 @@ def newGame():
 def loadGame():
     inventory = saveFile['inventory']
     health = saveFile['health']
-    coins = saveFile['coins']
-    playerPower = saveFile['playerPower']
+    coins = saveFile['money']
+    playerPower = saveFile['heroPower']
     print('Previous game save loaded.')
     commandLine()
     
@@ -232,12 +246,15 @@ oldLady = Enemy('Old Lady', 100, 1)
 baby = Enemy('baby', 100, 1)
 
 people = [oldLady, baby, assassin]
-stick = Weapon('stick', 5) 
-gun = Weapon('gun', 50)  
-cane = Weapon('cane', 6)  
-fist = Weapon('fist', 3)  
-sword = Weapon('sword', 40)
-knife = Weapon('knife', 10)
+stick = Weapon('stick', 5, 0) 
+gun = Weapon('gun', 50, 100)  
+cane = Weapon('cane', 6, 5)  
+fist = Weapon('fist', 3, 0)  
+sword = Weapon('sword', 40, 80)
+knife = Weapon('knife', 10, 50)
+
+potato = Food('potato', 2, 2)
+bread = Food('bread', 5, 5)
 
 weapons = [knife, gun, cane, fist, sword] 
 peopleHelpers = []                               

@@ -26,9 +26,10 @@ class Player(object):
         return self.power
 
 class Weapon(object):
-    def __init__(self, name, power):
+    def __init__(self, name, power, cost):
         self.name = name
         self.power = power
+        self.cost = cost
 
 class Enemy(object):
     def __init__(self, name, health,  power):
@@ -39,18 +40,20 @@ class Enemy(object):
 class Vendor(object):
     goods = {}
 
-    def __init__(self, name):
+    def __init__(self, name, message):
         self.name = name
+        self.message = message
 
     def say(self, thing):
         for item in thing:
-            print(item + ': ' + str(thing[item]) + ' money')
+            print(item.name + ': ' + str(item.cost) + ' money')
         return item
 
 class Food(object):
-    def __init__(self, name, hp):
+    def __init__(self, name, hp, cost):
         self.name = name
         self.hp = hp
+        self.cost = cost
 
 if __name__ == '__main__':
-    print('wrong one, buddy')
+    print()
