@@ -29,7 +29,7 @@ def personInteraction():
     print('You see a(n) ' + str(newPerson.name) + ' in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
     while True:
-        if input() == 'y':
+        if input().upper() == 'Y':
             fight(newPerson, npi)
             break
 
@@ -97,19 +97,33 @@ def fight(person, weapon):
             break
 
 def store():
-    keeper = Vendor('test')
-    keeper.goods = {'bread': 10, 'wood': 20, 'potatoes': 30}
-    print("Welcome to the market! What will you like to buy?")
+    keeper = Vendor('foodMerchant', 'Hello! Welcome to my food store.')
+    print('Wares:')
+    keeper.goods = [bread, potato]
+    print(keeper.message)
     keeper.say(keeper.goods)
-    command = input(": ")
+    print('Type an item\'s name to purchase it.')
+#    print('Type "info item" for more information on an item.')
+    command = input(': ')
     if input != '' or input != 'nothing':
         if command in keeper.goods:
             hero.spend(keeper.goods[command])
             inventory.append(command)
             print('%s purchased for %s money.' %(command, keeper.goods[command]))
             store()
+#        elif 'info' in command:
+#			thingToGetInfoOn = command[5:]
+#			for item in keeper.goods:
+#				if item.name == thingToGetInfoOn:
+#					itemInShop = True
+#					break
+#			if not itemInShop:
+#				print('Item not found.')
+#				store()
+#			else:
+#				print('Power: )
         else:
-            print("Object not found")
+            print("Command not found.")
     else:
         commandLine()
 
@@ -136,9 +150,11 @@ def commandLine():
             elif command == 'inventory':
                 for item in inventory:
                     if isinstance(item, Weapon):
-                        print(item.name)
+                        print(item.name + ': ' + str(item.power) + ' power')
+                    elif isinstance(item, Food):
+                        print(item.name + ': Restores ' + str(item.hp) + ' health')
                     else:
-                        print(item)
+                        print(item.name)
 
             elif command == 'health':
                 print(hero.health)
@@ -158,6 +174,14 @@ def commandLine():
                     saveFile['firstTime'] = True
                 else:
                     print('Cancelled.')
+            elif 'eat' in command:
+                foodToEat = command[4:] # Get food out of command string
+                if foodToEat in inventory:
+                    inventory.remove(foodToEat)
+                    health += foodToEat.hp
+					
+                else:
+                    print('Food not in inventory!')
             else:
                 print('Command not found. Type "help" for help.')
 
@@ -167,15 +191,15 @@ def commandLine():
 saveFile = shelve.open('savefile')
 
 def quitGame():
-    print('Saving progress...')
-    saveFile['inventory'] = inventory
-    saveFile['health'] = hero.health
-    saveFile['playerPower'] = hero.power
-    saveFile['coins'] = hero.money 
-    saveFile['firstTime'] = False
-    print('Progress saved.')
-    sys.exit(0)
-
+        print('Saving progress...')
+        saveFile['inventory'] = inventory
+        saveFile['health'] = hero.health
+        saveFile['heroPower'] = hero.power
+        saveFile['money'] = hero.money 
+        saveFile['firstTime'] = False
+        print('Progress saved.')
+        sys.exit()
+        
 def newGame():
     inventory = [stick]
     health = 100
@@ -188,8 +212,8 @@ def newGame():
 def loadGame():
     inventory = saveFile['inventory']
     health = saveFile['health']
-    coins = saveFile['coins']
-    playerPower = saveFile['playerPower']
+    coins = saveFile['money']
+    playerPower = saveFile['heroPower']
     print('Previous game save loaded.')
     commandLine()
 
@@ -218,28 +242,31 @@ def play():
                         break
     except EOFError or KeyboardInterrupt:
         sys.exit(0)
-
+        
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
-                    'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
-                    'reset--reset progress']
+                    'money--show amount of money', 'store--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
+                    'reset--reset progress', 'eat <food>--consume food and restore health']
 
 assassin = Enemy('assassin', 100, 10)
 oldLady = Enemy('oldLady', 100, 1)
 baby = Enemy('baby', 100, 1)
                                                  
 people = [oldLady, baby, assassin]
-stick = Weapon('stick', 5) 
-gun = Weapon('gun', 50)  
-cane = Weapon('cane', 6)  
-fist = Weapon('fist', 3)  
-sword = Weapon('sword', 40)
-knife = Weapon('knife', 10)
+stick = Weapon('stick', 5, 0) 
+gun = Weapon('gun', 50, 100)  
+cane = Weapon('cane', 6, 5)  
+fist = Weapon('fist', 3, 0)  
+sword = Weapon('sword', 40, 80)
+knife = Weapon('knife', 10, 50)
+
+potato = Food('potato', 2, 2)
+bread = Food('bread', 5, 5)
 
 weapons = [knife, gun, cane, fist, sword] 
 peopleHelpers = []                               
-inventory = [stick]                              
+inventory = [stick, potato]                              
                                                  
-hero = Player('nil', 100, 100, 9000)                       
+saveFile = shelve.open('savefile')
 
 if len(sys.argv) < 2:
     play()
