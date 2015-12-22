@@ -44,7 +44,7 @@ class Vendor(object):
 
     def say(self, thing):
         for item in thing:
-            print(item)
+            print(item + ': ' + str(thing[item]) + ' money')
         return item
 
 class Food(object):

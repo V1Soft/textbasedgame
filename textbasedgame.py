@@ -99,12 +99,14 @@ def fight(person, weapon):
 def store():
     keeper = Vendor('test')
     keeper.goods = {'bread': 10, 'wood': 20, 'potatoes': 30}
+    print('Welcome to the market! What would you like to buy?')
     keeper.say(keeper.goods)
-    command = input("what would you like to buy?: ")
+    command = input(': ')
     if input != '' or input != 'nothing':
         if command in keeper.goods:
             hero.spend(keeper.goods[command])
             inventory.append(command)
+            print('%s purchased for %s money.' %(command, keeper.goods[command]))
             store()
         else:
             print("Object not found")
