@@ -160,9 +160,9 @@ possibleCommands = ['help--show this message', 'interact--find another person to
 
 hero = Player('nil', 100, 100, 9000)                       
 
-assassin = Enemy('assassin', 10)
-oldLady = Enemy('oldLady', 1)
-baby = Enemy('baby', 1)
+assassin = Enemy('assassin', 100, 10)
+oldLady = Enemy('Old Lady', 100, 1)
+baby = Enemy('baby', 100, 1)
 
 people = [oldLady, baby, assassin]
 stick = Weapon('stick', 5) 

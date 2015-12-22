@@ -31,9 +31,10 @@ class Weapon(object):
         self.power = power
 
 class Enemy(object):
-    def __init__(self, name, power):
+    def __init__(self, name, health,  power):
         self.name = name
         self.power = power
+        self.health = health
 
 if __name__ == '__main__':
     print('wrong one, buddy')
