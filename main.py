@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import time, random, sys, shelve
+import time, random, sys, shelve, inspect
 from obj import *
 
 def choosePerson(wantedInfo): # Choose person to interact with
@@ -45,8 +45,7 @@ def fight(person, weapon):
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
     while True:
-        # hero.health -= weapon.power + person.power # Remove health from player
-        hero.hit(weapon.power + person.power)
+        hero.hit(weapon.power + person.power) # Remove health from player
         personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
         if hero.health - (weapon.power + person.power) < 1 and person.health - (getBestInventoryWeapon() + hero.power) < 1:
             # In case of draw
@@ -97,6 +96,20 @@ def fight(person, weapon):
 
             break
 
+def store():
+    keeper = Vendor('test')
+    keeper.goods = {'bread': 10, 'wood': 20, 'potatoes': 30}
+    keeper.say(keeper.goods)
+    command = input("what would you like to buy?: ")
+    if input != '' or input != 'nothing':
+        if command in keeper.goods:
+            hero.spend(keeper.goods[command])
+            inventory.append(command)
+            store()
+        else:
+            print("Object not found")
+    else:
+        commandLine()
 
 def commandLine():
     global saveFile, playerPower, coins, health, inventory
@@ -115,9 +128,15 @@ def commandLine():
             elif command == 'money':
                 print(hero.money)
 
+            elif command == 'store':
+                store()
+
             elif command == 'inventory':
                 for item in inventory:
-                    print(item)
+                    if isinstance(item, Weapon):
+                        print(item.name)
+                    else:
+                        print(item)
 
             elif command == 'health':
                 print(hero.health)
@@ -155,7 +174,7 @@ def quitGame():
         
         
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
-                    'money--show amount of money', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
+                    'money--show amount of money', 'store--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress']
 
 hero = Player('nil', 100, 100, 9000)                       

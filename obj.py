@@ -36,5 +36,21 @@ class Enemy(object):
         self.power = power
         self.health = health
 
+class Vendor(object):
+    goods = {}
+
+    def __init__(self, name):
+        self.name = name
+
+    def say(self, thing):
+        for item in thing:
+            print(item)
+        return item
+
+class Food(object):
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+
 if __name__ == '__main__':
     print('wrong one, buddy')
