@@ -1,39 +1,7 @@
 #!/usr/bin/python3
 
 import time, random, sys, shelve
-
-class Player(object):
-    def __init__(self, name, health, money, power):
-        self.name = name
-        self.health = health
-        self.money = money
-        self.power = power
-
-    def hit(self, amount):
-        if amount > self.health:
-            return ValueError
-        self.health -= amount
-        return self.health
-
-    def spend(self, amount):
-        if amount > self.money:
-            raise RuntimeError
-        self.money -= amount
-        return self.money
-    
-    def receive(self, amount):
-        self.money += amount
-        return self.money
-
-class Weapon(object):
-    def __init__(self, name, power):
-        self.name = name
-        self.power = power
-
-class Enemy(object):
-    def __init__(self, name,  power):
-        self.name = name
-        self.power = power
+from obj import *
 
 def choosePerson(wantedInfo): # Choose person to interact with
     assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
@@ -131,12 +99,14 @@ def fight(person, weapon):
 def store():
     keeper = Vendor('test')
     keeper.goods = {'bread': 10, 'wood': 20, 'potatoes': 30}
+    print("Welcome to the market! What will you like to buy?")
     keeper.say(keeper.goods)
-    command = input("what would you like to buy?: ")
+    command = input(": ")
     if input != '' or input != 'nothing':
         if command in keeper.goods:
             hero.spend(keeper.goods[command])
             inventory.append(command)
+            print('%s purchased for %s money.' %(command, keeper.goods[command]))
             store()
         else:
             print("Object not found")
