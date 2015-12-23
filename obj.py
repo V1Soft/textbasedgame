@@ -36,6 +36,10 @@ class Enemy(object):
         self.name = name
         self.power = power
         self.health = health
+        
+class Helper(object):
+    def __init__(self, name):
+        self.name = name
 
 class Vendor(object):
     goods = {}
