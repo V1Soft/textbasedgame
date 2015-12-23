@@ -142,6 +142,7 @@ def market():
                             print('Power: %s' %(item.power))
                         elif isinstance(item, Food):
                             print('Healing power: %s' %(item.hp))
+                        print('Description: ' + item.description)
                 elif command == 'exit':
                     print('You left the store.')
                     return
@@ -300,19 +301,19 @@ oldLady = Helper('old lady')
 baby = Enemy('baby', 100, 1)
 people = [oldLady, baby, assassin]
 
-stick = Weapon('stick', 5, 0) 
-gun = Weapon('gun', 50, 100)  
-cane = Weapon('cane', 6, 5)  
-fist = Weapon('fist', 3, 0)  
-sword = Weapon('sword', 40, 80)
-knife = Weapon('knife', 10, 50)
+stick = Weapon('stick', 5, 0, 'Whack to your heart\'s content.') 
+gun = Weapon('gun', 50, 100, '3expensive5me')  
+cane = Weapon('cane', 6, 5, 'The hidden power of old people everywhere')  
+fist = Weapon('fist', 3, 0, 'Ah...the sweetness of stealing a body part from your enemies...')  
+sword = Weapon('sword', 40, 80, 'Can slice even the most tough butter!')
+knife = Weapon('knife', 10, 50, 'Ouch.')
 
 # Special weapons that baddies don't have:
-grenade = Weapon('grenade', 10, 5)
+grenade = Weapon('grenade', 10, 5, 'Throw it in your opponent\'s face!')
 
-potato = Food('potato', 2, 2)
-bread = Food('bread', 5, 5)
-healthPotion = Food('health potion', 20, 50)
+potato = Food('potato', 2, 2, 'Doesn\'t heal much, but it\'s nice and cheap.')
+bread = Food('bread', 5, 5, 'Much more substantial food.')
+healthPotion = Food('health potion', 80, 60, 'Will heal you right up--but it comes with a price.')
 
 weapons = [knife, gun, cane, fist, sword]
 helperItems = [potato, bread, healthPotion]
