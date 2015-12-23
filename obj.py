@@ -26,10 +26,11 @@ class Player(object):
         return self.power
 
 class Weapon(object):
-    def __init__(self, name, power, cost):
+    def __init__(self, name, power, cost, description):
         self.name = name
         self.power = power
         self.cost = cost
+        self.description = description
 
 class Enemy(object):
     def __init__(self, name, health, power):
@@ -54,10 +55,11 @@ class Vendor(object):
         return item
 
 class Food(object):
-    def __init__(self, name, hp, cost):
+    def __init__(self, name, hp, cost, description):
         self.name = name
         self.hp = hp
         self.cost = cost
+        self.description = description
 
 if __name__ == '__main__':
     print()
