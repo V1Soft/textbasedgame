@@ -33,10 +33,11 @@ class Weapon(object):
         self.description = description
 
 class Enemy(object):
-    def __init__(self, name, health, power):
+    def __init__(self, name, health, power, acts):
         self.name = name
         self.power = power
         self.health = health
+        self.acts = acts
         
 class Helper(object):
     def __init__(self, name):

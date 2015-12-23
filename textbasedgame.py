@@ -59,6 +59,53 @@ def fight(person, weapon):
         hero.health += weapon.hp
         print("The " + str(person.name) + " ran away")
         commandLine()
+    for choice in interactoptions:
+        print(choice)
+    while True:
+        command = input(": ")
+        if command == "1" or command.upper() == "FIGHT":
+            continue
+        elif command == "2" or command.upper() == "ACT":
+            print("You " +  str(person.acts) + " the " + str(person.name) + ".")
+            if person.acts == "pet":
+                print("The " + str(person.name) + " runs away")
+                commandLine()
+            else:
+                print("...But it didn't work")
+                break
+        elif command == "3" or command.upper() == "ITEM":
+            for item in inventory:
+                print(item.name)
+            command = input("What do you want to use?: ")
+            if command.startswith('eat'):
+                failed = False
+                foodToEat = command[4:] # Get food out of command string
+                for item in inventory:
+                    if item.name == foodToEat:
+                        if isinstance(item, Food):
+                            inventory.remove(item)
+                            hero.health += item.hp
+                            print('%s points added to health!' %(item.hp))
+                            failed = False
+                            break
+                        else:
+                            print("You cannot eat that")
+                            break
+                        break
+            elif command.startswith('throw'):
+                tothrow = command[6:]
+                for item in inventory:
+                    if item.name == tothrow:
+                        inventory.remove(item)
+                        print("You threw away the %s" %(item.name))
+                        break
+                break
+            else:
+                print("It does not seem you have that item")
+                break
+        elif command == "4" or command.upper() == "SPARE":
+            print("You ran away")
+            commandLine()
     while True:
         hero.hit(weapon.power + person.power) # Remove health from player
         personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
@@ -318,12 +365,13 @@ def play():
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
                     'money--show amount of money', 'market--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress', 'eat <food>--consume food and restore health']
+interactoptions = ['FIGHT', 'ACT', 'ITEM', 'SPARE']
 
 hero = Player('nil', 100, 100, 9000)                       
 
-assassin = Enemy('assassin', 100, 10)
+assassin = Enemy('assassin', 100, 10, "pet")
 oldLady = Helper('old lady')
-baby = Enemy('baby', 100, 1)
+baby = Enemy('baby', 100, 1, "pet")
 people = [oldLady, baby, assassin]
 
 stick = Weapon('stick', 5, 0, 'Whack to your heart\'s content.') 
