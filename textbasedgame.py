@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import time, random, sys, shelve, inspect
+import time, random, sys, shelve
 from obj import *
 
 def choosePerson(wantedInfo): # Choose person to interact with
@@ -109,35 +109,58 @@ def fight(person, weapon):
             break
 
 def store():
-    keeper = Vendor('foodMerchant', 'Hello! Welcome to my food store.')
-    print('Wares:')
-    keeper.goods = [bread, potato]
-    print(keeper.message)
-    keeper.say(keeper.goods)
-    print('Type an item\'s name to purchase it.')
-    print('Type "info <item>" for more information on an item.')
-    print('Type "exit" to leave the store.')
-    while True:
-        command = input(': ')
-        if command in keeper.goods:
-            hero.spend(keeper.goods[command])
-            inventory.append(command)
-            print('%s purchased for %s money.' %(command, keeper.goods[command]))
-        elif command.startswith('info'):
-            thingToGetInfoOn = command[5:]
-            for item in keeper.goods:
-                if item.name == thingToGetInfoOn:
-                    itemInShop = True
-                    break
-            if not itemInShop:
-                print('Item not found.')
+    def goToVendor(vendor):
+        print(vendor.message)
+        print('Type an item\'s name to purchase it.')
+        print('Type "info <item>" for more information on an item.')
+        print('Type "exit" to leave the store.')
+        print('Items for sale:')
+        vendor.say(vendor.goods)
+        while True:
+                command = input(': ')
+                commandRun = False
+                thingToBuy = None
+                for good in vendor.goods:
+                    if good.name == command:
+                        thingToBuy = good
+                        break
+                if thingToBuy == None:
+                    print('Item not found.')
+                else:
+                    hero.spend(vendor.goods[thingToBuy].cost)
+                    inventory.append(thingToBuy)
+                    print('%s purchased for %s money.' %(thingToBuy.name, vendor.goods[thingToBuy].cost))
+                    
+                if command.startswith('info'):
+                    thingToGetInfoOn = command[5:]
+                    for item in vendor.goods:
+                        if item.name == thingToGetInfoOn:
+                            itemInShop = True
+                            break
+                    if not itemInShop:
+                        print('Item not found.')
+                    else:
+                        print('Healing power: %s' %(item.hp))
+                elif command == 'exit':
+                    print('You left the store.')
+                    return
+                    
+    print('Vendors:')
+    for vendor in vendors:
+        print(vendor.name)
+        
+    print('Please type the vendor you want to visit.')
+    isVendor = False
+    while not isVendor:
+        command = input()
+        for vendor in vendors:
+            if vendor.name == command:
+                vendorToVisit = vendor
+                isVendor = True
             else:
-                print('Healing power: %s' %(item.hp))
-        elif command == 'exit':
-            print('You left the store.')
-            break
-        else:
-            print("Command not found.")
+                print('Vendor not found.')
+
+    goToVendor(vendorToVisit)
 
 def commandLine():
     global saveFile, inventory
@@ -287,7 +310,10 @@ healthPotion = Food('health potion', 20, 50)
 weapons = [knife, gun, cane, fist, sword]
 helperItems = [potato, bread, healthPotion]
 peopleHelpers = []                               
-# inventory = [stick, potato]                              
+
+foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
+foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
+vendors = [foodMerchant]            
                                                  
 saveFile = shelve.open('savefile')
 
