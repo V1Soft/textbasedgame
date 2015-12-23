@@ -368,4 +368,5 @@ Make fighting more interactive
 Add helper kindness which decides worth of gift
 Make old ladies sometimes attack wielding canes
 Make grenade one-time use
+Add cheat mode
 '''
