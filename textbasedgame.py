@@ -3,19 +3,15 @@
 import time, random, sys, shelve
 from obj import *
 
-def choosePerson(wantedInfo): # Choose person to interact with
-    assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
+def choosePerson(): # Choose person to interact with
+#    assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
     person = random.choice(people)
     if isinstance(person, Enemy):
         item = random.choice(weapons)
-    elif isinstance(person, Helper):
+    else:
         item = random.choice(helperItems)
-    if wantedInfo == 'person':
-        return person
-
-    elif wantedInfo == 'item':
-        return item
-
+    
+    return [person, item]
 
 def getBestInventoryWeapon():
     bestItemPower = 0
@@ -29,9 +25,11 @@ def getBestInventoryWeapon():
 
 def personInteraction():
     global inventory
-    newPerson = choosePerson('person')
-    npi = choosePerson('item')
-    print('You see a(n) ' + str(newPerson.name) + ' in the distance. Do you choose to approach (y/n)?')
+    chosenThings = choosePerson()
+    
+    newPerson = chosenThings[0] # Get person from chosenThings list
+    npi = chosenThings[1]
+    print('You see a(n) ' + newPerson.name + ' in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
     while True:
         if input().upper() == 'Y':
@@ -46,7 +44,7 @@ def personInteraction():
             break
 
         else:
-            print()
+            print('You run away from the %s in fear.' %(newPerson.name))
             break
 
 
@@ -124,9 +122,9 @@ def store():
                     if good.name == command:
                         thingToBuy = good
                         break
-                if thingToBuy == None:
+                if thingToBuy == None and not command.startswith('info') and command != 'exit':
                     print('Item not found.')
-                else:
+                elif not command.startswith('info') and command != 'exit':
                     hero.spend(vendor.goods[thingToBuy].cost)
                     inventory.append(thingToBuy)
                     print('%s purchased for %s money.' %(thingToBuy.name, vendor.goods[thingToBuy].cost))
@@ -210,13 +208,16 @@ def commandLine():
                 else:
                     print('Cancelled.')
             elif command.startswith('eat'):
+                failed = False
                 foodToEat = command[4:] # Get food out of command string
                 for item in inventory:
                     if item.name == foodToEat:
-                        inventory.remove(item)
-                        hero.health += item.hp
-                        print('%s points added to health!' %(item.hp))
-                        failed = False
+                        if isinstance(item, Food):
+                            inventory.remove(item)
+                            hero.health += item.hp
+                            print('%s points added to health!' %(item.hp))
+                            failed = False
+                            break
 					
                 if failed != False:
                     print('Food not in inventory.')
