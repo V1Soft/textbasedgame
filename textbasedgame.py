@@ -106,7 +106,7 @@ def fight(person, weapon):
 
             break
 
-def store():
+def market():
     def goToVendor(vendor):
         print(vendor.message)
         print('Type an item\'s name to purchase it.')
@@ -138,7 +138,10 @@ def store():
                     if not itemInShop:
                         print('Item not found.')
                     else:
-                        print('Healing power: %s' %(item.hp))
+                        if isinstance(item, Weapon):
+                            print('Power: %s' %(item.power))
+                        elif isinstance(item, Food):
+                            print('Healing power: %s' %(item.hp))
                 elif command == 'exit':
                     print('You left the store.')
                     return
@@ -177,8 +180,8 @@ def commandLine():
             elif command == 'money':
                 print(hero.money)
 
-            elif command == 'store':
-                store()
+            elif command == 'market':
+                market()
 
             elif command == 'inventory':
                 for item in inventory:
@@ -287,7 +290,7 @@ def play():
         
         
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
-                    'money--show amount of money', 'store--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
+                    'money--show amount of money', 'market--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress', 'eat <food>--consume food and restore health']
 
 hero = Player('nil', 100, 100, 9000)                       
@@ -295,8 +298,8 @@ hero = Player('nil', 100, 100, 9000)
 assassin = Enemy('assassin', 100, 10)
 oldLady = Helper('old lady')
 baby = Enemy('baby', 100, 1)
-
 people = [oldLady, baby, assassin]
+
 stick = Weapon('stick', 5, 0) 
 gun = Weapon('gun', 50, 100)  
 cane = Weapon('cane', 6, 5)  
@@ -304,17 +307,23 @@ fist = Weapon('fist', 3, 0)
 sword = Weapon('sword', 40, 80)
 knife = Weapon('knife', 10, 50)
 
+# Special weapons that baddies don't have:
+grenade = Weapon('grenade', 10, 5)
+
 potato = Food('potato', 2, 2)
 bread = Food('bread', 5, 5)
 healthPotion = Food('health potion', 20, 50)
 
 weapons = [knife, gun, cane, fist, sword]
 helperItems = [potato, bread, healthPotion]
-peopleHelpers = []                               
+specialWeapons = [grenade]
+peopleHelpers = [oldLady]
 
 foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
 foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
-vendors = [foodMerchant]            
+weaponTrader = Vendor('weapon trader', 'I sell things to help you more efficiently kill people.')
+weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
+vendors = [foodMerchant, weaponTrader]            
                                                  
 saveFile = shelve.open('savefile')
 
