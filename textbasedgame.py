@@ -115,29 +115,29 @@ def store():
     print(keeper.message)
     keeper.say(keeper.goods)
     print('Type an item\'s name to purchase it.')
-#    print('Type "info item" for more information on an item.')
-    command = input(': ')
-    if input != '' or input != 'nothing':
+    print('Type "info <item>" for more information on an item.')
+    print('Type "exit" to leave the store.')
+    while True:
+        command = input(': ')
         if command in keeper.goods:
             hero.spend(keeper.goods[command])
             inventory.append(command)
             print('%s purchased for %s money.' %(command, keeper.goods[command]))
-            store()
-#        elif 'info' in command:
-#			thingToGetInfoOn = command[5:]
-#			for item in keeper.goods:
-#				if item.name == thingToGetInfoOn:
-#					itemInShop = True
-#					break
-#			if not itemInShop:
-#				print('Item not found.')
-#				store()
-#			else:
-#				print('Power: )
+        elif command.startswith('info'):
+            thingToGetInfoOn = command[5:]
+            for item in keeper.goods:
+                if item.name == thingToGetInfoOn:
+                    itemInShop = True
+                    break
+            if not itemInShop:
+                print('Item not found.')
+            else:
+                print('Healing power: %s' %(item.hp))
+        elif command == 'exit':
+            print('You left the store.')
+            break
         else:
             print("Command not found.")
-    else:
-        commandLine()
 
 def commandLine():
     global saveFile, inventory
