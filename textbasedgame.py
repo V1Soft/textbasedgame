@@ -35,14 +35,14 @@ def personInteraction():
     time.sleep(2)
     while True:
         if input().upper() == 'Y':
-            if isinstance(newPerson, Enemy):
-                fight(newPerson, npi)
-            else:
+            if isinstance(newPerson, Helper):
                 time.sleep(0.5)
                 print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
                 inventory.append(npi)
                 time.sleep(0.2)
                 print(npi.name + ' added to your inventory!')
+            else:
+                fight(newPerson, npi)
             break
 
         else:
@@ -56,6 +56,11 @@ def fight(person, weapon):
     time.sleep(0.5)
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
+    if isinstance(weapon, Food):
+        print("...So you took the " + str(weapon.name) + " and ate it")
+        hero.health += weapon.hp
+        print("The " + str(person.name) + " ran away")
+        commandLine()
     while True:
         hero.hit(weapon.power + person.power) # Remove health from player
         personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
@@ -203,7 +208,7 @@ def commandLine():
         except KeyboardInterrupt or EOFError:
             quitGame()
 
-saveFile = shelve.open('savefile')
+saveFile = shelve.open('saveFile')
 
 def quitGame():
         print('Saving progress...')
@@ -212,6 +217,7 @@ def quitGame():
         saveFile['heroPower'] = hero.power
         saveFile['money'] = hero.money 
         saveFile['firstTime'] = False
+        saveFile.close()
         print('Progress saved.')
         sys.exit()
         
