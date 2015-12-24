@@ -31,7 +31,8 @@ class Weapon(object):
         self.power = power
         self.cost = cost
         self.description = description
-
+        self.itemtype = itemtype
+        
 class Enemy(object):
     def __init__(self, name, health, power, acts):
         self.name = name
