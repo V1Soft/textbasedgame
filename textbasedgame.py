@@ -93,6 +93,16 @@ def fight(person, weapon):
                             print("You cannot eat that")
                             break
                         break
+            elif command.startswith('use'):
+                touse = command[4:]
+                for item in inventory:
+                    if item.name == touse:
+                        if item.itemtype == 'bomb':
+                            print("The " + item.name + " exploded")
+                            print("The %s took %s damage!" %(person.name, item.power))
+                            person.health -= item.power
+                            inventory.remove(item)
+                            break
             elif command.startswith('throw'):
                 tothrow = command[6:]
                 for item in inventory:
@@ -376,7 +386,7 @@ baby = Enemy('baby', 100, 1, "pet")
 people = [oldLady, baby, assassin]
 
 stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.') 
-gun = Weapon('gun', 50, 'projectile',  100, '3expensive5me')  
+gun = Weapon('gun', 50, 'projectile', 100, '3expensive5me')  
 cane = Weapon('cane', 6, 'sword', 5, 'The hidden power of old people everywhere')  
 fist = Weapon('fist', 3, 'melee', 0, 'Ah...the sweetness of stealing a body part from your enemies...')  
 sword = Weapon('sword', 40, 'sword', 80, 'Can slice even the most tough butter!')
@@ -411,3 +421,10 @@ elif sys.argv[1] == 'continue':
 
 commandLine()
 
+'''
+TODO:
+Add helper kindness which decides worth of gift
+Make old ladies sometimes attack wielding canes
+Make grenade one-time use
+Add cheat mode
+'''
