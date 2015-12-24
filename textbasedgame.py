@@ -375,15 +375,15 @@ oldLady = Helper('old lady')
 baby = Enemy('baby', 100, 1, "pet")
 people = [oldLady, baby, assassin]
 
-stick = Weapon('stick', 5, 0, 'Whack to your heart\'s content.') 
-gun = Weapon('gun', 50, 100, '3expensive5me')  
-cane = Weapon('cane', 6, 5, 'The hidden power of old people everywhere')  
-fist = Weapon('fist', 3, 0, 'Ah...the sweetness of stealing a body part from your enemies...')  
-sword = Weapon('sword', 40, 80, 'Can slice even the most tough butter!')
-knife = Weapon('knife', 10, 50, 'Ouch.')
+stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.') 
+gun = Weapon('gun', 50, 'projectile',  100, '3expensive5me')  
+cane = Weapon('cane', 6, 'sword', 5, 'The hidden power of old people everywhere')  
+fist = Weapon('fist', 3, 'melee', 0, 'Ah...the sweetness of stealing a body part from your enemies...')  
+sword = Weapon('sword', 40, 'sword', 80, 'Can slice even the most tough butter!')
+knife = Weapon('knife', 10, 'sword', 50, 'Ouch.')
 
 # Special weapons that baddies don't have:
-grenade = Weapon('grenade', 10, 5, 'Throw it in your opponent\'s face!')
+grenade = Weapon('grenade', 10, 'bomb', 5, 'Throw it in your opponent\'s face!')
 
 potato = Food('potato', 2, 2, 'Doesn\'t heal much, but it\'s nice and cheap.')
 bread = Food('bread', 5, 5, 'Much more substantial food.')

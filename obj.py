@@ -26,7 +26,7 @@ class Player(object):
         return self.power
 
 class Weapon(object):
-    def __init__(self, name, power, cost, description):
+    def __init__(self, name, power, itemtype, cost, description):
         self.name = name
         self.power = power
         self.cost = cost
