@@ -75,7 +75,8 @@ def fight(person, weapon):
                 break
         elif command == "3" or command.upper() == "ITEM":
             for item in inventory:
-                print(item.name)
+                if item in weapons or item in specialWeapons:
+                    print(item.name)
             command = input("What do you want to use?: ")
             if command.startswith('eat'):
                 failed = False
@@ -365,7 +366,7 @@ def play():
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
                     'money--show amount of money', 'market--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress', 'eat <food>--consume food and restore health']
-interactoptions = ['FIGHT', 'ACT', 'ITEM', 'SPARE']
+interactoptions = ['fight', 'act', 'item', 'spare']
 
 hero = Player('nil', 100, 100, 9000)                       
 
