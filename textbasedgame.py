@@ -33,14 +33,14 @@ def personInteraction():
     time.sleep(2)
     while True:
         if input().upper() == 'Y':
-            if isinstance(newPerson, Enemy):
-                fight(newPerson, npi)
-            else:
+            if isinstance(newPerson, Helper):
                 time.sleep(0.5)
                 print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
                 inventory.append(npi)
                 time.sleep(0.2)
                 print(npi.name + ' added to your inventory!')
+            else:
+                fight(newPerson, npi)
             break
 
         else:
@@ -54,6 +54,58 @@ def fight(person, weapon):
     time.sleep(0.5)
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
+    if isinstance(weapon, Food):
+        print("...So you took the " + str(weapon.name) + " and ate it")
+        hero.health += weapon.hp
+        print("The " + str(person.name) + " ran away")
+        commandLine()
+    for choice in interactoptions:
+        print(choice)
+    while True:
+        command = input(": ")
+        if command == "1" or command.upper() == "FIGHT":
+            continue
+        elif command == "2" or command.upper() == "ACT":
+            print("You " +  str(person.acts) + " the " + str(person.name) + ".")
+            if person.acts == "pet":
+                print("The " + str(person.name) + " runs away")
+                commandLine()
+            else:
+                print("...But it didn't work")
+                break
+        elif command == "3" or command.upper() == "ITEM":
+            for item in inventory:
+                print(item.name)
+            command = input("What do you want to use?: ")
+            if command.startswith('eat'):
+                failed = False
+                foodToEat = command[4:] # Get food out of command string
+                for item in inventory:
+                    if item.name == foodToEat:
+                        if isinstance(item, Food):
+                            inventory.remove(item)
+                            hero.health += item.hp
+                            print('%s points added to health!' %(item.hp))
+                            failed = False
+                            break
+                        else:
+                            print("You cannot eat that")
+                            break
+                        break
+            elif command.startswith('throw'):
+                tothrow = command[6:]
+                for item in inventory:
+                    if item.name == tothrow:
+                        inventory.remove(item)
+                        print("You threw away the %s" %(item.name))
+                        break
+                break
+            else:
+                print("It does not seem you have that item")
+                break
+        elif command == "4" or command.upper() == "SPARE":
+            print("You ran away")
+            commandLine()
     while True:
         hero.hit(weapon.power + person.power) # Remove health from player
         personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
@@ -231,6 +283,8 @@ def commandLine():
         except KeyboardInterrupt or EOFError:
             quitGame()
 
+saveFile = shelve.open('saveFile')
+
 def quitGame():
         print('Saving progress...')
         saveFile['inventory'] = inventory
@@ -238,9 +292,27 @@ def quitGame():
         saveFile['heroPower'] = hero.power
         saveFile['money'] = hero.money 
         saveFile['firstTime'] = False
+        saveFile.close()
         print('Progress saved.')
         sys.exit()
         
+def newGame():
+    inventory = [stick]
+    health = 100
+    coins = 100
+    playerPower = float(5)
+    print('New game set up. Welcome!')
+    saveFile['firstTime'] = False
+    commandLine()
+
+def loadGame():
+    inventory = saveFile['inventory']
+    health = saveFile['health']
+    coins = saveFile['money']
+    playerPower = saveFile['heroPower']
+    print('Previous game save loaded.')
+    commandLine()
+
         
 def newGame():
     global inventory
@@ -293,12 +365,13 @@ def play():
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
                     'money--show amount of money', 'market--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress', 'eat <food>--consume food and restore health']
+interactoptions = ['FIGHT', 'ACT', 'ITEM', 'SPARE']
 
 hero = Player('nil', 100, 100, 9000)                       
 
-assassin = Enemy('assassin', 100, 10)
+assassin = Enemy('assassin', 100, 10, "pet")
 oldLady = Helper('old lady')
-baby = Enemy('baby', 100, 1)
+baby = Enemy('baby', 100, 1, "pet")
 people = [oldLady, baby, assassin]
 
 stick = Weapon('stick', 5, 0, 'Whack to your heart\'s content.') 
