@@ -1,4 +1,5 @@
 class Player(object):
+    lv = 0
     def __init__(self, name, health, money, power):
         self.name = name
         self.health = health

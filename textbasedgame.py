@@ -34,11 +34,26 @@ def personInteraction():
     while True:
         if input().upper() == 'Y':
             if isinstance(newPerson, Helper):
-                time.sleep(0.5)
-                print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
-                inventory.append(npi)
-                time.sleep(0.2)
-                print(npi.name + ' added to your inventory!')
+                if hero.lv == 0:
+                    time.sleep(0.5)
+                    print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
+                    inventory.append(npi)
+                    time.sleep(0.2)
+                    print(npi.name + ' added to your inventory!')
+                    break
+                else:
+                    print("The %s looks at you sternly and says..." %(newPerson.name))
+                    if hero.lv > 0 and hero.lv < 3:
+                        print("\" As long you fought for self defence...\"")
+                        inventory.append(npi)
+                        print(npi.name + ' added to your inventory.')
+                        break
+                    else:
+                        print("\"You really are a terrible person.\"")
+                        print("\"Killing all of those people, disgusting.\"")
+                        print("The %s whacks you on you head with a cane" %(newPerson.name))
+                        hero.health -= cane.power
+                        break
             else:
                 fight(newPerson, npi)
             break
@@ -64,7 +79,7 @@ def fight(person, weapon):
     while True:
         command = input(": ")
         if command == "1" or command.upper() == "FIGHT":
-            continue
+            break
         elif command == "2" or command.upper() == "ACT":
             print("You " +  str(person.acts) + " the " + str(person.name) + ".")
             if person.acts == "pet":
@@ -156,6 +171,7 @@ def fight(person, weapon):
             print('The ' + str(person.name) + ' has been defeated!')
             powerToAdd = person.power / 4
             hero.gain(powerToAdd)
+            hero.lv += 1
             time.sleep(0.2)
             print('Your power level is now ' + str(hero.power))
             if random.randint(1, 2) == 1:
@@ -298,6 +314,7 @@ saveFile = shelve.open('saveFile')
 
 def quitGame():
         print('Saving progress...')
+        saveFile['lv'] = hero.lv
         saveFile['inventory'] = inventory
         saveFile['health'] = hero.health
         saveFile['heroPower'] = hero.power
@@ -309,6 +326,7 @@ def quitGame():
         
 def newGame():
     inventory = [stick]
+    hero.lv = 0
     health = 100
     coins = 100
     playerPower = float(5)
@@ -425,6 +443,5 @@ commandLine()
 TODO:
 Add helper kindness which decides worth of gift
 Make old ladies sometimes attack wielding canes
-Make grenade one-time use
 Add cheat mode
 '''
