@@ -29,11 +29,18 @@ def personInteraction():
     
     newPerson = chosenThings[0] # Get person from chosenThings list
     npi = chosenThings[1]
-    print('You see a(n) ' + newPerson.name + ' in the distance. Do you choose to approach (y/n)?')
+    if isinstance(newPerson, Helper):
+        print('You see a kind-looking person in the distance. Do you choose to approach (y/n)?')
+    else:
+        print('You see a mean-looking person in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
     while True:
         if input().upper() == 'Y':
+            print('The person is a(n) ' + newPerson.name + '!')
             if isinstance(newPerson, Helper):
+                if newPerson == oldLady:
+                    fight(oldLady, cane)
+                    return
                 time.sleep(0.5)
                 print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
                 inventory.append(npi)
@@ -294,7 +301,6 @@ def commandLine():
         except KeyboardInterrupt or EOFError:
             quitGame()
 
-saveFile = shelve.open('saveFile')
 
 def quitGame():
         print('Saving progress...')
@@ -307,23 +313,6 @@ def quitGame():
         print('Progress saved.')
         sys.exit()
         
-def newGame():
-    inventory = [stick]
-    health = 100
-    coins = 100
-    playerPower = float(5)
-    print('New game set up. Welcome!')
-    saveFile['firstTime'] = False
-    commandLine()
-
-def loadGame():
-    inventory = saveFile['inventory']
-    health = saveFile['health']
-    coins = saveFile['money']
-    playerPower = saveFile['heroPower']
-    print('Previous game save loaded.')
-    commandLine()
-
         
 def newGame():
     global inventory
@@ -380,10 +369,15 @@ interactoptions = ['fight', 'act', 'item', 'spare']
 
 hero = Player('nil', 100, 100, 9000)                       
 
+# Set up enemies
 assassin = Enemy('assassin', 100, 10, "pet")
-oldLady = Helper('old lady')
 baby = Enemy('baby', 100, 1, "pet")
 people = [oldLady, baby, assassin]
+
+# Set up helpers
+oldLady = Helper('old lady')
+gandalf = Helper('Gandalf')
+angel = Helper('angel')
 
 stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.') 
 gun = Weapon('gun', 50, 'projectile', 100, '3expensive5me')  
