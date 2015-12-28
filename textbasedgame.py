@@ -5,8 +5,13 @@ from obj import *
 
 def choosePerson(): # Choose person to interact with
 #    assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
-    person = random.choice(people)
-    if isinstance(person, Enemy):
+    personType = random.randint(1, 2)
+    if personType == 1:
+        person = random.choice(enemies)
+    else:
+        person = random.choice(helpers)
+        
+    if person in enemies:
         item = random.choice(weapons)
     else:
         item = random.choice(helperItems)
@@ -39,7 +44,7 @@ def personInteraction():
             print('The person is a(n) ' + newPerson.name + '!')
             if isinstance(newPerson, Helper):
                 if newPerson == oldLady:
-                    fight(oldLady, cane)
+                    fight(badOldLady, cane)
                     return
                 time.sleep(0.5)
                 print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
@@ -372,12 +377,14 @@ hero = Player('nil', 100, 100, 9000)
 # Set up enemies
 assassin = Enemy('assassin', 100, 10, "pet")
 baby = Enemy('baby', 100, 1, "pet")
-people = [oldLady, baby, assassin]
+badOldLady = Enemy('old lady', 100, 2, 'tickle')
+enemies = [assassin, baby]
 
 # Set up helpers
 oldLady = Helper('old lady')
 gandalf = Helper('Gandalf')
 angel = Helper('angel')
+helpers = [oldLady, gandalf, angel]
 
 stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.') 
 gun = Weapon('gun', 50, 'projectile', 100, '3expensive5me')  
