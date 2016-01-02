@@ -1,6 +1,12 @@
 #!/usr/bin/python3
 
-import time, random, sys, shelve
+import random 
+import sys
+import time
+import sys
+
+import shelve
+
 from obj import *
 
 def choosePerson(): # Choose person to interact with
