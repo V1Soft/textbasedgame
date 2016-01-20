@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import random 
 import sys
 import shelve
@@ -437,11 +438,14 @@ vendors = [foodMerchant, weaponTrader]
                                                  
 saveFile = shelve.open('savefile')
 
-if len(sys.argv) < 2:
-    play()
-elif sys.argv[1] == 'reset':
-    newGame()
-elif sys.argv[1] == 'continue':
-    loadGame()
+argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
+argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
+argparser.add_argument('-lg', '--load-game', help='Load existing game', action='store_true')
+args = argparser.parse_args()
 
-commandLine()
+if args.reset:
+    newGame()
+elif args.load_game:
+    loadGame()
+else:
+    play()
