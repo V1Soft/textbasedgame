@@ -338,12 +338,16 @@ def newGame():
 
 def loadGame():
     global inventory
-    inventory = saveFile['inventory']
-    hero.health = saveFile['health']
-    hero.money = saveFile['money']
-    hero.power = saveFile['heroPower']
-    print('Previous game save loaded.')
-    commandLine()
+    try:
+        inventory = saveFile['inventory']
+        hero.health = saveFile['health']
+        hero.money = saveFile['money']
+        hero.power = saveFile['heroPower']
+        print('Previous game save loaded.')
+        commandLine()
+    except KeyError:
+        print('Savefile does not exist. Creating new savefile...')
+        newGame()
     
 
 def play():
