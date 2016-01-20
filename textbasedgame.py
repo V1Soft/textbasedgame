@@ -2,15 +2,12 @@
 
 import random 
 import sys
-import time
-import sys
-
 import shelve
+import time
 
 from obj import *
 
 def choosePerson(): # Choose person to interact with
-#    assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
     personType = random.randint(1, 2)
     if personType == 1:
         person = random.choice(enemies)
@@ -72,7 +69,7 @@ def fight(person, weapon):
     time.sleep(0.5)
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
-    if isinstance(weapon, Food):
+    if isinstance(weapon, Food): # Code no longer relevant
         print("...So you took the " + str(weapon.name) + " and ate it")
         hero.health += weapon.hp
         print("The " + str(person.name) + " ran away")
@@ -353,7 +350,18 @@ def loadGame():
 def play():
     try:
         while True:
-            print('+----------------------------------------------+\n| Welcome to textbasedgame!                    |\n| This game is released under the GPL.         |\n| Copyright V1Soft 2015                        |\n+----------------------------------------------+\n\nDo you want to:\n1. Start a new game (new)\n2. Continue from a previous save (continue) or\n3. Exit the game (quit)')
+            print('''
++----------------------------------------------+
+| Welcome to textbasedgame!                    |
+| This game is released under the GPL.         |
+| Copyright V1Soft 2016                        |
++----------------------------------------------+
+
+Do you want to:
+1. Start a new game (new)
+2. Continue from a previous save (continue) or
+3. Exit the game (quit)
+            ''')
             choice = input(': ')
             if choice == 'new' or choice == '1':
                 print('Are you sure you want to reset all data?')
@@ -377,9 +385,15 @@ def play():
         sys.exit(0)
         
         
-possibleCommands = ['help--show this message', 'interact--find another person to interact with',
-                    'money--show amount of money', 'market--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
-                    'reset--reset progress', 'eat <food>--consume food and restore health']
+possibleCommands = ['help--show this message',
+                    'interact--find another person to interact with',
+                    'money--show amount of money',
+                    'market--go to the market',
+                    'inventory--list inventory items',
+                    'health--show health',
+                    'quit--quit game',
+                    'reset--reset progress',
+                    'eat <food>--consume food and restore health']
 interactoptions = ['fight', 'act', 'item', 'spare']
 
 hero = Player('nil', 100, 100, 9000)                       
