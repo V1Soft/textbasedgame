@@ -182,8 +182,21 @@ def fight(person, weapon):
             hero.receive(coinsToAdd)
             time.sleep(0.2)
             print('Opponent dropped %s coins' %(coinsToAdd))
-
             break
+
+
+def saveInfo(name, info):
+    saveFile = shelve.open('savefile')
+    saveFile[name] = info
+    saveFile.close()
+    
+
+def loadInfo(wantedInfo):
+    saveFile = shelve.open('savefile')
+    info = saveFile[wantedInfo]
+    return info
+    
+
 
 def market():
     def goToVendor(vendor):
@@ -244,7 +257,7 @@ def market():
     goToVendor(vendorToVisit)
 
 def commandLine():
-    global saveFile, inventory
+    global inventory
     print('Type "help" for help.')
     while True:
         try:
@@ -287,7 +300,7 @@ def commandLine():
                 print('Are you sure you want to reset all data?')
                 choice = input()
                 if choice == 'y' or choice == 'yes':
-                    saveFile['firstTime'] = True
+                    saveInfo('firstTime', True)
                 else:
                     print('Cancelled.')
             elif command.startswith('eat'):
@@ -313,12 +326,11 @@ def commandLine():
 
 def quitGame():
         print('Saving progress...')
-        saveFile['inventory'] = inventory
-        saveFile['health'] = hero.health
-        saveFile['heroPower'] = hero.power
-        saveFile['money'] = hero.money 
-        saveFile['firstTime'] = False
-        saveFile.close()
+        saveInfo('inventory', inventory)
+        saveInfo('health', hero.health)
+        saveInfo('heroPower', hero.power)
+        saveInfo('money', hero.money)
+        saveInfo('firstTime', False)
         print('Progress saved.')
         sys.exit()
         
@@ -330,17 +342,17 @@ def newGame():
     hero.money = 100
     hero.power = float(5)
     print('New game set up. Welcome!')
-    saveFile['firstTime'] = False
+    saveInfo('firstTime', False)
     commandLine()
     
 
 def loadGame():
     global inventory
     try:
-        inventory = saveFile['inventory']
-        hero.health = saveFile['health']
-        hero.money = saveFile['money']
-        hero.power = saveFile['heroPower']
+        inventory = loadInfo('inventory')
+        hero.health = loadInfo('health')
+        hero.money = loadInfo('money')
+        hero.power = loadInfo('heroPower')
         print('Previous game save loaded.')
         commandLine()
     except KeyError:
@@ -434,9 +446,7 @@ foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
 foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
 weaponTrader = Vendor('weapon trader', 'I sell things to help you more efficiently kill people.')
 weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
-vendors = [foodMerchant, weaponTrader]            
-                                                 
-saveFile = shelve.open('savefile')
+vendors = [foodMerchant, weaponTrader]
 
 argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
 argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
