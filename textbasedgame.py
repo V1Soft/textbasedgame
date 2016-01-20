@@ -1,16 +1,14 @@
 #!/usr/bin/python3
 
+import argparse
 import random 
 import sys
-import time
-import sys
-
 import shelve
+import time
 
 from obj import *
 
 def choosePerson(): # Choose person to interact with
-#    assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
     personType = random.randint(1, 2)
     if personType == 1:
         person = random.choice(enemies)
@@ -72,7 +70,7 @@ def fight(person, weapon):
     time.sleep(0.5)
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
-    if isinstance(weapon, Food):
+    if isinstance(weapon, Food): # Code no longer relevant
         print("...So you took the " + str(weapon.name) + " and ate it")
         hero.health += weapon.hp
         print("The " + str(person.name) + " ran away")
@@ -184,8 +182,21 @@ def fight(person, weapon):
             hero.receive(coinsToAdd)
             time.sleep(0.2)
             print('Opponent dropped %s coins' %(coinsToAdd))
-
             break
+
+
+def saveInfo(name, info):
+    saveFile = shelve.open('savefile')
+    saveFile[name] = info
+    saveFile.close()
+    
+
+def loadInfo(wantedInfo):
+    saveFile = shelve.open('savefile')
+    info = saveFile[wantedInfo]
+    return info
+    
+
 
 def market():
     def goToVendor(vendor):
@@ -246,7 +257,7 @@ def market():
     goToVendor(vendorToVisit)
 
 def commandLine():
-    global saveFile, inventory
+    global inventory
     print('Type "help" for help.')
     while True:
         try:
@@ -289,7 +300,7 @@ def commandLine():
                 print('Are you sure you want to reset all data?')
                 choice = input()
                 if choice == 'y' or choice == 'yes':
-                    saveFile['firstTime'] = True
+                    saveInfo('firstTime', True)
                 else:
                     print('Cancelled.')
             elif command.startswith('eat'):
@@ -315,12 +326,11 @@ def commandLine():
 
 def quitGame():
         print('Saving progress...')
-        saveFile['inventory'] = inventory
-        saveFile['health'] = hero.health
-        saveFile['heroPower'] = hero.power
-        saveFile['money'] = hero.money 
-        saveFile['firstTime'] = False
-        saveFile.close()
+        saveInfo('inventory', inventory)
+        saveInfo('health', hero.health)
+        saveInfo('heroPower', hero.power)
+        saveInfo('money', hero.money)
+        saveInfo('firstTime', False)
         print('Progress saved.')
         sys.exit()
         
@@ -332,24 +342,39 @@ def newGame():
     hero.money = 100
     hero.power = float(5)
     print('New game set up. Welcome!')
-    saveFile['firstTime'] = False
+    saveInfo('firstTime', False)
     commandLine()
     
 
 def loadGame():
     global inventory
-    inventory = saveFile['inventory']
-    hero.health = saveFile['health']
-    hero.money = saveFile['money']
-    hero.power = saveFile['heroPower']
-    print('Previous game save loaded.')
-    commandLine()
+    try:
+        inventory = loadInfo('inventory')
+        hero.health = loadInfo('health')
+        hero.money = loadInfo('money')
+        hero.power = loadInfo('heroPower')
+        print('Previous game save loaded.')
+        commandLine()
+    except KeyError:
+        print('Savefile does not exist. Creating new savefile...')
+        newGame()
     
 
 def play():
     try:
         while True:
-            print('+----------------------------------------------+\n| Welcome to textbasedgame!                    |\n| This game is released under the GPL.         |\n| Copyright V1Soft 2015                        |\n+----------------------------------------------+\n\nDo you want to:\n1. Start a new game (new)\n2. Continue from a previous save (continue) or\n3. Exit the game (quit)')
+            print('''
++----------------------------------------------+
+| Welcome to textbasedgame!                    |
+| This game is released under the GPL.         |
+| Copyright V1Soft 2016                        |
++----------------------------------------------+
+
+Do you want to:
+1. Start a new game (new)
+2. Continue from a previous save (continue) or
+3. Exit the game (quit)
+            ''')
             choice = input(': ')
             if choice == 'new' or choice == '1':
                 print('Are you sure you want to reset all data?')
@@ -373,9 +398,15 @@ def play():
         sys.exit(0)
         
         
-possibleCommands = ['help--show this message', 'interact--find another person to interact with',
-                    'money--show amount of money', 'market--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
-                    'reset--reset progress', 'eat <food>--consume food and restore health']
+possibleCommands = ['help--show this message',
+                    'interact--find another person to interact with',
+                    'money--show amount of money',
+                    'market--go to the market',
+                    'inventory--list inventory items',
+                    'health--show health',
+                    'quit--quit game',
+                    'reset--reset progress',
+                    'eat <food>--consume food and restore health']
 interactoptions = ['fight', 'act', 'item', 'spare']
 
 hero = Player('nil', 100, 100, 9000)                       
@@ -415,15 +446,16 @@ foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
 foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
 weaponTrader = Vendor('weapon trader', 'I sell things to help you more efficiently kill people.')
 weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
-vendors = [foodMerchant, weaponTrader]            
-                                                 
-saveFile = shelve.open('savefile')
+vendors = [foodMerchant, weaponTrader]
 
-if len(sys.argv) < 2:
-    play()
-elif sys.argv[1] == 'reset':
+argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
+argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
+argparser.add_argument('-lg', '--load-game', help='Load existing game', action='store_true')
+args = argparser.parse_args()
+
+if args.reset:
     newGame()
-elif sys.argv[1] == 'continue':
+elif args.load_game:
     loadGame()
-
-commandLine()
+else:
+    play()
