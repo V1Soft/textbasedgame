@@ -1,12 +1,23 @@
 #!/usr/bin/python3
 
-import time, random, sys, shelve
+import random 
+import sys
+import time
+import sys
+
+import shelve
+
 from obj import *
 
 def choosePerson(): # Choose person to interact with
 #    assert wantedInfo == 'person' or wantedInfo == 'item', 'Bad argument.'
-    person = random.choice(people)
-    if isinstance(person, Enemy):
+    personType = random.randint(1, 2)
+    if personType == 1:
+        person = random.choice(enemies)
+    else:
+        person = random.choice(helpers)
+        
+    if person in enemies:
         item = random.choice(weapons)
     else:
         item = random.choice(helperItems)
@@ -29,18 +40,25 @@ def personInteraction():
     
     newPerson = chosenThings[0] # Get person from chosenThings list
     npi = chosenThings[1]
-    print('You see a(n) ' + newPerson.name + ' in the distance. Do you choose to approach (y/n)?')
+    if isinstance(newPerson, Helper):
+        print('You see a kind-looking person in the distance. Do you choose to approach (y/n)?')
+    else:
+        print('You see a mean-looking person in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
     while True:
         if input().upper() == 'Y':
-            if isinstance(newPerson, Enemy):
-                fight(newPerson, npi)
-            else:
+            print('The person is a(n) ' + newPerson.name + '!')
+            if isinstance(newPerson, Helper):
+                if newPerson == oldLady:
+                    fight(badOldLady, cane)
+                    return
                 time.sleep(0.5)
                 print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
                 inventory.append(npi)
                 time.sleep(0.2)
                 print(npi.name + ' added to your inventory!')
+            else:
+                fight(newPerson, npi)
             break
 
         else:
@@ -54,6 +72,69 @@ def fight(person, weapon):
     time.sleep(0.5)
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
+    if isinstance(weapon, Food):
+        print("...So you took the " + str(weapon.name) + " and ate it")
+        hero.health += weapon.hp
+        print("The " + str(person.name) + " ran away")
+        commandLine()
+    for choice in interactoptions:
+        print(choice)
+    while True:
+        command = input(": ")
+        if command == "1" or command.upper() == "FIGHT":
+            continue
+        elif command == "2" or command.upper() == "ACT":
+            print("You " +  str(person.acts) + " the " + str(person.name) + ".")
+            if person.acts == "pet":
+                print("The " + str(person.name) + " runs away")
+                commandLine()
+            else:
+                print("...But it didn't work")
+                break
+        elif command == "3" or command.upper() == "ITEM":
+            for item in inventory:
+                if item in weapons or item in specialWeapons:
+                    print(item.name)
+            command = input("What do you want to use?: ")
+            if command.startswith('eat'):
+                failed = False
+                foodToEat = command[4:] # Get food out of command string
+                for item in inventory:
+                    if item.name == foodToEat:
+                        if isinstance(item, Food):
+                            inventory.remove(item)
+                            hero.health += item.hp
+                            print('%s points added to health!' %(item.hp))
+                            failed = False
+                            break
+                        else:
+                            print("You cannot eat that")
+                            break
+                        break
+            elif command.startswith('use'):
+                touse = command[4:]
+                for item in inventory:
+                    if item.name == touse:
+                        if item.itemtype == 'bomb':
+                            print("The " + item.name + " exploded")
+                            print("The %s took %s damage!" %(person.name, item.power))
+                            person.health -= item.power
+                            inventory.remove(item)
+                            break
+            elif command.startswith('throw'):
+                tothrow = command[6:]
+                for item in inventory:
+                    if item.name == tothrow:
+                        inventory.remove(item)
+                        print("You threw away the %s" %(item.name))
+                        break
+                break
+            else:
+                print("It does not seem you have that item")
+                break
+        elif command == "4" or command.upper() == "SPARE":
+            print("You ran away")
+            commandLine()
     while True:
         hero.hit(weapon.power + person.power) # Remove health from player
         personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
@@ -231,6 +312,7 @@ def commandLine():
         except KeyboardInterrupt or EOFError:
             quitGame()
 
+
 def quitGame():
         print('Saving progress...')
         saveFile['inventory'] = inventory
@@ -238,6 +320,7 @@ def quitGame():
         saveFile['heroPower'] = hero.power
         saveFile['money'] = hero.money 
         saveFile['firstTime'] = False
+        saveFile.close()
         print('Progress saved.')
         sys.exit()
         
@@ -293,23 +376,31 @@ def play():
 possibleCommands = ['help--show this message', 'interact--find another person to interact with',
                     'money--show amount of money', 'market--go to the market', 'inventory--list inventory items', 'health--show health', 'quit--quit game',
                     'reset--reset progress', 'eat <food>--consume food and restore health']
+interactoptions = ['fight', 'act', 'item', 'spare']
 
 hero = Player('nil', 100, 100, 9000)                       
 
-assassin = Enemy('assassin', 100, 10)
-oldLady = Helper('old lady')
-baby = Enemy('baby', 100, 1)
-people = [oldLady, baby, assassin]
+# Set up enemies
+assassin = Enemy('assassin', 100, 10, "pet")
+baby = Enemy('baby', 100, 1, "pet")
+badOldLady = Enemy('old lady', 100, 2, 'tickle')
+enemies = [assassin, baby]
 
-stick = Weapon('stick', 5, 0, 'Whack to your heart\'s content.') 
-gun = Weapon('gun', 50, 100, '3expensive5me')  
-cane = Weapon('cane', 6, 5, 'The hidden power of old people everywhere')  
-fist = Weapon('fist', 3, 0, 'Ah...the sweetness of stealing a body part from your enemies...')  
-sword = Weapon('sword', 40, 80, 'Can slice even the most tough butter!')
-knife = Weapon('knife', 10, 50, 'Ouch.')
+# Set up helpers
+oldLady = Helper('old lady')
+gandalf = Helper('Gandalf')
+angel = Helper('angel')
+helpers = [oldLady, gandalf, angel]
+
+stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.') 
+gun = Weapon('gun', 50, 'projectile', 100, '3expensive5me')  
+cane = Weapon('cane', 6, 'sword', 5, 'The hidden power of old people everywhere')  
+fist = Weapon('fist', 3, 'melee', 0, 'Ah...the sweetness of stealing a body part from your enemies...')  
+sword = Weapon('sword', 40, 'sword', 80, 'Can slice even the most tough butter!')
+knife = Weapon('knife', 10, 'sword', 50, 'Ouch.')
 
 # Special weapons that baddies don't have:
-grenade = Weapon('grenade', 10, 5, 'Throw it in your opponent\'s face!')
+grenade = Weapon('grenade', 10, 'bomb', 5, 'Throw it in your opponent\'s face!')
 
 potato = Food('potato', 2, 2, 'Doesn\'t heal much, but it\'s nice and cheap.')
 bread = Food('bread', 5, 5, 'Much more substantial food.')
@@ -336,12 +427,3 @@ elif sys.argv[1] == 'continue':
     loadGame()
 
 commandLine()
-
-'''
-TODO:
-Make fighting more interactive
-Add helper kindness which decides worth of gift
-Make old ladies sometimes attack wielding canes
-Make grenade one-time use
-Add cheat mode
-'''
