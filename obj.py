@@ -65,4 +65,4 @@ class Food(object):
         self.description = description
 
 if __name__ == '__main__':
-    print()
+    pass
