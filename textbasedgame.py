@@ -423,7 +423,7 @@ def newGame():
     hero.money = 100
     hero.power = float(5)
     print('What is your desired language?')
-    print('¿Qué idioma tú quieres?')
+    #print('¿Qué idioma tú quieres?') # Broken
     for language in languages:
         print(language)
     language = input()
