@@ -6,11 +6,8 @@ import shelve
 import time
 
 from obj import *
-<<<<<<< HEAD
 from entities import *
-=======
 from languages import *
->>>>>>> 18961ad72d41f1a27e963cf4efe56f8e105442c0
 
 
 # Util. Functions
@@ -86,11 +83,7 @@ def personInteraction():
         command = input('You see a mean-looking person in the distance. Do you choose to approach? (y/n) : ')
     time.sleep(2)
     while True:
-<<<<<<< HEAD
         if yesorno() == 'yes':
-=======
-        if command.upper() == 'Y':
->>>>>>> 18961ad72d41f1a27e963cf4efe56f8e105442c0
             print('The person is a(n) ' + newPerson.name + '!')
             if isinstance(newPerson, Helper):
                 if newPerson == oldLady:
