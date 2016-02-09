@@ -37,7 +37,7 @@ foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
 foodMerchant.goods = {bread: bread, potato: potato}  # dict so index can be accessed by name
 weaponTrader = Vendor('weapon trader', 'I sell things to help you more efficiently kill people.')
 weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
-vendors = [foodMerchant, weaponTrader]
+vendors = (foodMerchant, weaponTrader)
 
 # Create worlds
 World = World(0, 37)
@@ -51,4 +51,4 @@ argparser.add_argument('-d', '--dev-mode', help='Start textbasedgame in Develope
 args = argparser.parse_args()
 
 if __name__ == '__main__':
-    print("Spoilers!")
+    print("Why are you here?")

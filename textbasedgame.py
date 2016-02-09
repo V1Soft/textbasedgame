@@ -266,7 +266,7 @@ def market():
     print('''
 +-----------------------------------------------------+
 | Welcome to the Market!                              |
-| Type an item\'s name to purchase it.                |
+| Type an item's name to purchase it.                 |
 | Type "info <item>" for more information on an item. |
 | Type "exit" to leave the store.                     |
 +-----------------------------------------------------+
@@ -532,16 +532,16 @@ Do you want to:
         sys.exit(0)
 
 
-possibleCommands = ['help--show this message',
-                    'interact--find another person to interact with',
-                    'money--show amount of money',
-                    'market--go to the market',
-                    'inventory--list inventory items',
-                    'health--show health',
-                    'quit--quit game',
-                    'reset--reset progress',
-                    'eat <food>--consume food and restore health'
-                    'temp--get current temperature']
+possibleCommands = ['help—show this message',
+                    'interact—find another person to interact with',
+                    'money—show amount of money',
+                    'market—go to the market',
+                    'inventory—list inventory items',
+                    'health—show health',
+                    'quit—quit game',
+                    'reset—reset progress',
+                    'eat <food>—consume food and restore health'
+                    'temp—get current temperature']
 
 interactoptions = ['fight', 'act', 'item', 'spare']
 
