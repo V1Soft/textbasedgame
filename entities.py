@@ -1,4 +1,5 @@
 from obj import *
+import argparse
 
 # Set up enemies
 assassin = Enemy('assassin', 100, 10, "pet")
@@ -33,12 +34,19 @@ specialWeapons = [grenade]
 peopleHelpers = [oldLady]
 
 foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
-foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
+foodMerchant.goods = {bread: bread, potato: potato}  # dict so index can be accessed by name
 weaponTrader = Vendor('weapon trader', 'I sell things to help you more efficiently kill people.')
 weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
 vendors = [foodMerchant, weaponTrader]
 
+# Create worlds
+World = World(0, 37)
+
+# Command line parsing
 argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
 argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
 argparser.add_argument('-lg', '--load-game', help='Load existing game', action='store_true')
 args = argparser.parse_args()
+
+if __name__ == '__main__':
+    print("Spoilers!")

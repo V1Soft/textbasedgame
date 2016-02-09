@@ -1,14 +1,35 @@
 #!/usr/bin/python3
 
-import argparse
 import random
 import sys
 import shelve
 import time
 
 from obj import *
+from entities import *
 
-def choosePerson(): # Choose person to interact with
+
+# Util. Functions
+def yesorno(x=''):
+    if x == '':
+        user = input(x)
+        if user.lower() == 'y' or user.lower() == 'yes':
+            return 'yes'
+        elif user.lower() == 'n' or user.lower() == 'no':
+            return 'no'
+        else:
+            print("Lel")
+    else:
+        user = input()
+        if user.lower() == 'y' or 'yes':
+            return 'yes'
+        elif user.lower() == 'n' or user.lower() == 'no':
+            return 'no'
+        else:
+            print("lel")
+
+
+def choosePerson():  # Choose person to interact with
     personType = random.randint(1, 2)
     if personType == 1:
         person = random.choice(enemies)
@@ -22,6 +43,7 @@ def choosePerson(): # Choose person to interact with
 
     return [person, item]
 
+
 def getBestInventoryWeapon():
     bestItemPower = 0
     for item in inventory:
@@ -32,11 +54,27 @@ def getBestInventoryWeapon():
     return bestItemPower
 
 
+def worldHandler():
+    hero.turn += 1
+    if hero.turn >= 10 and hero.turn <= 15:
+        World.temp = 20
+        print("It's getting colder. The current temp is %s." % (World.temp))
+    elif hero.turn >= 15 and hero.turn <= 20:
+        World.temp = 15
+        print("The sun is setting. The current temp is %s." % (World.temp))
+    elif hero.turn >= 20 and hero.turn <= 30:
+        World.temp = 10
+        print("It's night. The current temp is %s." % (World.temp))
+    else:
+        World.temp = 37
+        print("It's daytime! The current temp is %s." % (World.temp))
+
+
+# Funcs. for gameplay
 def personInteraction():
     global inventory
     chosenThings = choosePerson()
-
-    newPerson = chosenThings[0] # Get person from chosenThings list
+    newPerson = chosenThings[0]  # Get person from chosenThings list
     npi = chosenThings[1]
     if isinstance(newPerson, Helper):
         print('You see a kind-looking person in the distance. Do you choose to approach (y/n)?')
@@ -44,35 +82,14 @@ def personInteraction():
         print('You see a mean-looking person in the distance. Do you choose to approach (y/n)?')
     time.sleep(2)
     while True:
-        if input().upper() == 'Y':
+        if yesorno() == 'yes':
             print('The person is a(n) ' + newPerson.name + '!')
             if isinstance(newPerson, Helper):
-    #                 if hero.lv == 0:
-    #                     time.sleep(0.5)
-    #                     print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
-    #                     inventory.append(npi)
-    #                     time.sleep(0.2)
-    #                     print(npi.name + ' added to your inventory!')
-    #                     break
-    #                 else:
-    #                     print("The %s looks at you sternly and says..." %(newPerson.name))
-    #                     if hero.lv > 0 and hero.lv < 3:
-    #                         print("\" As long you fought for self defence...\"")
-    #                         inventory.append(npi)
-    #                         print(npi.name + ' added to your inventory.')
-    #                         break
-    #                     else:
-    #                         print("\"You really are a terrible person.\"")
-    #                         print("\"Killing all of those people, disgusting.\"")
-    #                         print("The %s whacks you on you head with a cane" %(newPerson.name))
-    #                         hero.health -= cane.power
-    #                         break
-# =======
                 if newPerson == oldLady:
                     fight(badOldLady, cane)
                     return
                 time.sleep(0.5)
-                print('The %s smiles and holds a(n) %s out in her hand.' %(newPerson.name, npi.name))
+                print('The %s smiles and holds a(n) %s out in her hand.' % (newPerson.name, npi.name))
                 inventory.append(npi)
                 time.sleep(0.2)
                 print(npi.name + ' added to your inventory!')
@@ -81,7 +98,7 @@ def personInteraction():
             break
 
         else:
-            print('You run away from the %s in fear.' %(newPerson.name))
+            print('You run away from the %s in fear.' % (newPerson.name))
             break
 
 
@@ -91,7 +108,7 @@ def fight(person, weapon):
     time.sleep(0.5)
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
-    if isinstance(weapon, Food): # Code no longer relevant
+    if isinstance(weapon, Food):  # Code no longer relevant
         print("...So you took the " + str(weapon.name) + " and ate it")
         hero.health += weapon.hp
         print("The " + str(person.name) + " ran away")
@@ -103,8 +120,8 @@ def fight(person, weapon):
         if command == "1" or command.upper() == "FIGHT":
             break
         elif command == "2" or command.upper() == "ACT":
-            print("You " +  str(person.acts) + " the " + str(person.name) + ".")
-            if person.acts == "pet":
+            print("You " + str(person.acts) + " the " + str(person.name) + ".")
+            if random.randint(0, 100) % 2 == 0:
                 print("The " + str(person.name) + " runs away")
                 commandLine()
             else:
@@ -116,15 +133,15 @@ def fight(person, weapon):
                     print(item.name)
             command = input("What do you want to use?: ")
             if command.startswith('eat'):
-                failed = False
-                foodToEat = command[4:] # Get food out of command string
+                # failed = False
+                foodToEat = command[4:]  # Get food out of command string
                 for item in inventory:
                     if item.name == foodToEat:
                         if isinstance(item, Food):
                             inventory.remove(item)
                             hero.health += item.hp
-                            print('%s points added to health!' %(item.hp))
-                            failed = False
+                            print('%s points added to health!' % (item.hp))
+                            # failed = False
                             break
                         else:
                             print("You cannot eat that")
@@ -136,7 +153,7 @@ def fight(person, weapon):
                     if item.name == touse:
                         if item.itemtype == 'bomb':
                             print("The " + item.name + " exploded")
-                            print("The %s took %s damage!" %(person.name, item.power))
+                            print("The %s took %s damage!" % (person.name, item.power))
                             person.health -= item.power
                             inventory.remove(item)
                             break
@@ -145,7 +162,7 @@ def fight(person, weapon):
                 for item in inventory:
                     if item.name == tothrow:
                         inventory.remove(item)
-                        print("You threw away the %s" %(item.name))
+                        print("You threw away the %s" % (item.name))
                         break
                 break
             else:
@@ -155,12 +172,12 @@ def fight(person, weapon):
             print("You ran away")
             commandLine()
     while True:
-        hero.hit(weapon.power + person.power) # Remove health from player
-        personHealth -= getBestInventoryWeapon() + hero.power # Remove health of opponent
+        hero.hit(weapon.power + person.power)  # Remove health from player
+        personHealth -= getBestInventoryWeapon() + hero.power  # Remove health of opponent
         if hero.health - (weapon.power + person.power) < 1 and person.health - (getBestInventoryWeapon() + hero.power) < 1:
             # In case of draw
             time.sleep(0.2)
-            print('You somehow managed to escape with %s health remaining.' %(hero.health))
+            print('You somehow managed to escape with %s health remaining.' % (hero.health))
             break
 
         elif hero.health < 1:
@@ -169,24 +186,24 @@ def fight(person, weapon):
             print('You\'re dead!')
             removedItems = []
             for item in inventory:
-               if random.randint(1, 2) == 1 and item != stick:
-                   inventory.remove(item)
-                   removedItems.append(item)
+                if random.randint(1, 2) == 1 and item != stick:
+                    inventory.remove(item)
+                    removedItems.append(item)
 
             printedItems = 0
             for item in removedItems:
                 printedItems += 1
                 time.sleep(0.2)
                 if printedItems == len(removedItems):
-                   print(str(item) + ' dropped from inventory.')
+                    print(str(item) + ' dropped from inventory.')
 
                 else:
-                   print(item + ', ', end='')
+                    print(item + ', ', end='')
 
             droppedCoins = random.randint(0, int(hero.money / 2))
             hero.spend(droppedCoins)
             time.sleep(0.2)
-            print('You dropped %s coins on your death.' %(droppedCoins))
+            print('You dropped %s coins on your death.' % (droppedCoins))
             break
         elif personHealth < 1:
             # In case of win
@@ -199,11 +216,11 @@ def fight(person, weapon):
             if random.randint(1, 2) == 1:
                 inventory.append(weapon)
                 time.sleep(0.2)
-                print('%s added to inventory.' %(weapon.name))
-            coinsToAdd = person.power * 5 + random.randint(-4, 4) # Dropped coins is opponent pwr * 5 + randint
+                print('%s added to inventory.' % (weapon.name))
+            coinsToAdd = person.power * 5 + random.randint(-4, 4)  # Dropped coins is opponent pwr * 5 + randint
             hero.receive(coinsToAdd)
             time.sleep(0.2)
-            print('Opponent dropped %s coins' %(coinsToAdd))
+            print('Opponent dropped %s coins' % (coinsToAdd))
             break
 
 
@@ -219,7 +236,6 @@ def loadInfo(wantedInfo):
     return info
 
 
-
 def market():
     def goToVendor(vendor):
         print(vendor.message)
@@ -230,18 +246,18 @@ def market():
         vendor.say(vendor.goods)
         while True:
                 command = input(': ')
-                commandRun = False
+                # commandRun = False
                 thingToBuy = None
                 for good in vendor.goods:
                     if good.name == command:
                         thingToBuy = good
                         break
-                if thingToBuy == None and not command.startswith('info') and command != 'exit':
+                if thingToBuy is None and not command.startswith('info') and command is not 'exit':
                     print('Item not found.')
                 elif not command.startswith('info') and command != 'exit':
                     hero.spend(vendor.goods[thingToBuy].cost)
                     inventory.append(thingToBuy)
-                    print('%s purchased for %s money.' %(thingToBuy.name, vendor.goods[thingToBuy].cost))
+                    print('%s purchased for %s money.' % (thingToBuy.name, vendor.goods[thingToBuy].cost))
 
                 if command.startswith('info'):
                     thingToGetInfoOn = command[5:]
@@ -253,9 +269,9 @@ def market():
                         print('Item not found.')
                     else:
                         if isinstance(item, Weapon):
-                            print('Power: %s' %(item.power))
+                            print('Power: %s' % (item.power))
                         elif isinstance(item, Food):
-                            print('Healing power: %s' %(item.hp))
+                            print('Healing power: %s' % (item.hp))
                         print('Description: ' + item.description)
                 elif command == 'exit':
                     print('You left the store.')
@@ -278,11 +294,13 @@ def market():
 
     goToVendor(vendorToVisit)
 
+
 def commandLine():
     global inventory
     print('Type "help" for help.')
     while True:
         try:
+            worldHandler()
             command = input(': ')
             if command == 'help':
                 print('Possible commands:')
@@ -327,18 +345,21 @@ def commandLine():
                     print('Cancelled.')
             elif command.startswith('eat'):
                 failed = False
-                foodToEat = command[4:] # Get food out of command string
+                foodToEat = command[4:]  # Get food out of command string
                 for item in inventory:
                     if item.name == foodToEat:
                         if isinstance(item, Food):
                             inventory.remove(item)
                             hero.health += item.hp
-                            print('%s points added to health!' %(item.hp))
+                            print('%s points added to health!' % (item.hp))
                             failed = False
                             break
 
-                if failed != False:
+                if failed is not False:
                     print('Food not in inventory.')
+            elif command == 'temp':
+                print(World.temp)
+
             else:
                 print('Command not found. Type "help" for help.')
 
@@ -348,36 +369,6 @@ def commandLine():
 
 def quitGame():
         print('Saving progress...')
-# <<<<<<< HEAD
-#         saveFile['lv'] = hero.lv
-#         saveFile['inventory'] = inventory
-#         saveFile['health'] = hero.health
-#         saveFile['heroPower'] = hero.power
-#         saveFile['money'] = hero.money
-#         saveFile['firstTime'] = False
-#         saveFile.close()
-#         print('Progress saved.')
-#         sys.exit()
-
-# def newGame():
-#     inventory = [stick]
-#     hero.lv = 0
-#     health = 100
-#     coins = 100
-#     playerPower = float(5)
-#     print('New game set up. Welcome!')
-#     saveFile['firstTime'] = False
-#     commandLine()
-
-# def loadGame():
-#     inventory = saveFile['inventory']
-#     health = saveFile['health']
-#     coins = saveFile['money']
-#     playerPower = saveFile['heroPower']
-#     print('Previous game save loaded.')
-#     commandLine()
-
-# =======
         saveInfo('inventory', inventory)
         saveInfo('health', hero.health)
         saveInfo('heroPower', hero.power)
@@ -385,6 +376,7 @@ def quitGame():
         saveInfo('firstTime', False)
         print('Progress saved.')
         sys.exit()
+
 
 def newGame():
     global inventory
@@ -440,7 +432,7 @@ Do you want to:
                 sys.exit(0)
             else:
                 while True:
-                    choice = input('Invalid option: Do you want to quit (Y/n) ')
+                    choice = input('Invalid option: Do you want to quit (Y/n)')
                     if choice.upper() == 'Y' or choice == 'yes':
                         sys.exit(0)
                     else:
@@ -457,15 +449,16 @@ possibleCommands = ['help--show this message',
                     'health--show health',
                     'quit--quit game',
                     'reset--reset progress',
-                    'eat <food>--consume food and restore health']
+                    'eat <food>--consume food and restore health'
+                    'temp--get current temperature']
+
 interactoptions = ['fight', 'act', 'item', 'spare']
 
 hero = Player('nil', 100, 100, 9000)
 
-if __name__ == '__main__':
-    if args.reset:
-        newGame()
-    elif args.load_game:
-        loadGame()
-    else:
-        play()
+if args.reset:
+    newGame()
+elif args.load_game:
+    loadGame()
+else:
+    play()
