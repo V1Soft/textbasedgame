@@ -11,6 +11,6 @@ Run textbasedgame.py to play.
 TODO:
 - [ ] Multiple language support
 - [ ] Online game saves and accounts
-- [ ] Multiple game saves
+- [x] Multiple game saves
 - [ ] Online multiplayer
 - [ ] Fix serious bugs

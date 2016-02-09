@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import random
 import sys
 import shelve
@@ -49,16 +50,16 @@ def worldHandler():
     hero.turn += 1
     if hero.turn >= 10 and hero.turn <= 15:
         World.temp = 20
-        print("It's getting colder. The current temp is %s." % (World.temp))
+        print("It's getting colder. The current temp is %s." % World.temp)
     elif hero.turn >= 15 and hero.turn <= 20:
         World.temp = 15
-        print("The sun is setting. The current temp is %s." % (World.temp))
+        print("The sun is setting. The current temp is %s." % World.temp)
     elif hero.turn >= 20 and hero.turn <= 30:
         World.temp = 10
-        print("It's night. The current temp is %s." % (World.temp))
+        print("It's night. The current temp is %s." % World.temp)
     else:
         World.temp = 37
-        print("It's daytime! The current temp is %s." % (World.temp))
+        print("It's daytime! The current temp is %s." % World.temp)
 
 
 # Funcs. for gameplay
@@ -94,7 +95,7 @@ def personInteraction():
 
 
 def fight(person, weapon):
-    global playerPower, inventory, money, health
+    global inventory, money, health
     personHealth = 100
     time.sleep(0.5)
     print('The ' + str(person.name)+ ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
@@ -135,7 +136,6 @@ def fight(person, weapon):
                         else:
                             print("You cannot eat that")
                             break
-                        break
             elif command[1] == 'use':
                 for item in inventory:
                     if item.name == command[2]:
@@ -216,14 +216,15 @@ def fight(person, weapon):
 
 
 def saveInfo(name, info):
-    saveFile = shelve.open('savefile')
-    saveFile[name] = info
-    saveFile.close()
+    s = shelve.open(sfname)
+    s[name] = info
+    s.close()
 
 
 def loadInfo(wantedInfo):
-    saveFile = shelve.open('savefile')
-    info = saveFile[wantedInfo]
+    s = shelve.open(sfname)
+    info = s[wantedInfo]
+    s.close()
     return info
 
 
@@ -248,6 +249,7 @@ def market():
 
                 if command.startswith('info'):
                     thingToGetInfoOn = command[5:]
+                    itemInShop = False
                     for item in vendor.goods:
                         if item.name == thingToGetInfoOn:
                             itemInShop = True
@@ -295,6 +297,7 @@ def market():
 
 def get(weapon):
     inventory.append(weapon)
+
 
 def devMode():
     global inventory
@@ -450,6 +453,7 @@ def quitGame():
 
 def newGame():
     global inventory, language
+    newSave()
     inventory = [stick, potato]
     hero.health = 100
     hero.money = 100
@@ -471,7 +475,23 @@ def newGame():
 
 
 def loadGame():
-    global inventory, language
+    global inventory, language, sfname, sfnames
+    print('What game save do you want to use?') # I think this will currently only work if you are in the tbg directory
+    savefiles = []
+    for file in os.listdir('./saves'):
+        if file.endswith('.save'):
+            print(file[:-5])
+            savefiles.append(file)
+    command = input(': ')
+    if not command + '.save' in savefiles:
+        print('Save not found.', end=' ')
+        if confirm('Would you like to create a new save? '):
+            newGame()
+        else:
+            print('Cancelled. Quitting...')
+            sys.exit(0)
+    else:
+        sfname = './saves/' + command + '.save'
     try:
         inventory = loadInfo('inventory')
         hero.health = loadInfo('health')
@@ -483,6 +503,20 @@ def loadGame():
     except KeyError:
         print('Savefile does not exist or is broken. Creating new savefile...')
         newGame()
+
+
+def newSave(name=''):
+    global sfname
+    if name == '':
+        print('Please type the name of the game save you want.')
+        name = input()
+    if confirm('Do you want to make a game save called ' + name + '? '):
+        sfname = './saves/' + name + '.save'
+        shelve.open(sfname).close()
+        print('Save ' + name + ' created.')
+    else:
+        print('Cancelled. Quitting...')
+        sys.exit(0)
 
 
 def play():
@@ -503,11 +537,7 @@ Do you want to:
             ''')
             choice = input(': ')
             if choice == 'new' or choice == '1':
-                choice = input('Are you sure you want to reset all data? (y/n) : ')
-                if choice.upper() == 'Y' or choice == 'yes':
-                    newGame()
-                else:
-                    print('Cancelled.')
+                newGame()
             elif choice == 'continue' or choice == '2':
                 loadGame()
             elif choice == 'cheats' or choice == '3':
@@ -540,7 +570,7 @@ possibleCommands = ['help—show this message',
                     'health—show health',
                     'quit—quit game',
                     'reset—reset progress',
-                    'eat <food>—consume food and restore health'
+                    'eat <food>—consume food and restore health',
                     'temp—get current temperature']
 
 interactoptions = ['fight', 'act', 'item', 'spare']

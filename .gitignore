@@ -1,3 +1,2 @@
 __pycache__
-savefile.db
-savefile
+*.save
