@@ -417,7 +417,7 @@ def quitGame():
         
         
 def newGame():
-    global inventory
+    global inventory, language
     inventory = [stick, potato]
     hero.health = 100
     hero.money = 100
