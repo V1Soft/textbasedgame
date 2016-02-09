@@ -299,74 +299,74 @@ def get(weapon):
     inventory.append(weapon)
 
 
-def devMode():
-    global inventory
-    print('Type "help" for help.')
-    while True:
-        try:
-            inventory = [stick, gun, cane, fist, sword, knife, grenade, potato, bread, healthPotion]
-            command = input(': ')
-            if command == 'help':
-                print('Possible commands:')
-                for command in possibleCommands:
-                    print(command)
-
-            elif command == 'interact':
-                personInteraction()
-
-            elif command == 'money':
-                print(hero.money)
-
-            elif command == 'market':
-                market()
-
-            elif command == 'inventory':
-                for item in inventory:
-                    if isinstance(item, Weapon):
-                        print(item.name + ': ' + str(item.power) + ' power')
-                    elif isinstance(item, Food):
-                        print(item.name + ': Restores ' + str(item.hp) + ' health')
-                    else:
-                        print(item.name)
-
-            elif command == 'health':
-                print(hero.health)
-            
-            elif command == 'quit':
-                choice = input('Are you sure you want to quit? Your progress will be saved. (y/n) : ')
-                if choice == 'y' or choice == 'yes':
-                    quitGame()
-                else:
-                    print('Cancelled.')
-         
-            elif command == 'reset':
-                choice = input('Are you sure you want to reset all data? (y/n) : ')
-                if choice == 'y' or choice == 'yes':
-                    saveInfo('firstTime', True)
-                else:
-                    print('Cancelled.')
-            elif command.startswith('eat'):
-                failed = False
-                foodToEat = command[4:] # Get food out of command string
-                for item in inventory:
-                    if item.name == foodToEat:
-                        if isinstance(item, Food):
-                            inventory.remove(item)
-                            hero.health += item.hp
-                            print('%s points added to health!' %(item.hp))
-                            failed = False
-                            break
-					
-                if failed != False:
-                    print('Food not in inventory.')
-            elif command.startswith('get'):
-                weapon = command[4:]
-                get(weapon)
-            else:
-                print('Command not found. Type "help" for help.')
-
-        except KeyboardInterrupt or EOFError:
-            quitGame()
+# def devMode():
+#     global inventory
+#     print('Type "help" for help.')
+#     while True:
+#         try:
+#             inventory = [stick, gun, cane, fist, sword, knife, grenade, potato, bread, healthPotion]
+#             command = input(': ')
+#             if command == 'help':
+#                 print('Possible commands:')
+#                 for command in possibleCommands:
+#                     print(command)
+#
+#             elif command == 'interact':
+#                 personInteraction()
+#
+#             elif command == 'money':
+#                 print(hero.money)
+#
+#             elif command == 'market':
+#                 market()
+#
+#             elif command == 'inventory':
+#                 for item in inventory:
+#                     if isinstance(item, Weapon):
+#                         print(item.name + ': ' + str(item.power) + ' power')
+#                     elif isinstance(item, Food):
+#                         print(item.name + ': Restores ' + str(item.hp) + ' health')
+#                     else:
+#                         print(item.name)
+#
+#             elif command == 'health':
+#                 print(hero.health)
+#
+#             elif command == 'quit':
+#                 choice = input('Are you sure you want to quit? Your progress will be saved. (y/n) : ')
+#                 if choice == 'y' or choice == 'yes':
+#                     quitGame()
+#                 else:
+#                     print('Cancelled.')
+#
+#             elif command == 'reset':
+#                 choice = input('Are you sure you want to reset all data? (y/n) : ')
+#                 if choice == 'y' or choice == 'yes':
+#                     saveInfo('firstTime', True)
+#                 else:
+#                     print('Cancelled.')
+#             elif command.startswith('eat'):
+#                 failed = False
+#                 foodToEat = command[4:] # Get food out of command string
+#                 for item in inventory:
+#                     if item.name == foodToEat:
+#                         if isinstance(item, Food):
+#                             inventory.remove(item)
+#                             hero.health += item.hp
+#                             print('%s points added to health!' %(item.hp))
+#                             failed = False
+#                             break
+#
+#                 if failed != False:
+#                     print('Food not in inventory.')
+#             elif command.startswith('get'):
+#                 weapon = command[4:]
+#                 get(weapon)
+#             else:
+#                 print('Command not found. Type "help" for help.')
+#
+#         except KeyboardInterrupt or EOFError:
+#             quitGame()
 
 
 def commandLine():
@@ -431,7 +431,12 @@ def commandLine():
                     print('Food not in inventory.')
             elif command == 'temp':
                 print(World.temp)
-
+            elif args.dev_mode:
+                # Add functions for cheat mode here
+                # such as...
+               #if command == 'invincible':
+                   #hero.invincible = True (just an example, doesn't work)
+                pass
             else:
                 print('Command not found. Type "help" for help.')
 
@@ -581,7 +586,5 @@ if args.reset:
     newGame()
 elif args.load_game:
     loadGame()
-elif args.dev_mode:
-    devMode()
 else:
     play()
