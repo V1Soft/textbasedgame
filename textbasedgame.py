@@ -7,6 +7,7 @@ import shelve
 import time
 
 from obj import *
+#from languages import *
 
 def choosePerson(): # Choose person to interact with
     personType = random.randint(1, 2)
@@ -398,7 +399,7 @@ Do you want to:
         sys.exit(0)
         
         
-possibleCommands = ['help--show this message',
+possibleCommands = ('help--show this message',
                     'interact--find another person to interact with',
                     'money--show amount of money',
                     'market--go to the market',
@@ -406,8 +407,8 @@ possibleCommands = ['help--show this message',
                     'health--show health',
                     'quit--quit game',
                     'reset--reset progress',
-                    'eat <food>--consume food and restore health']
-interactoptions = ['fight', 'act', 'item', 'spare']
+                    'eat <food>--consume food and restore health')
+interactoptions = ('fight', 'act', 'item', 'spare')
 
 hero = Player('nil', 100, 100, 9000)                       
 
@@ -415,13 +416,13 @@ hero = Player('nil', 100, 100, 9000)
 assassin = Enemy('assassin', 100, 10, "pet")
 baby = Enemy('baby', 100, 1, "pet")
 badOldLady = Enemy('old lady', 100, 2, 'tickle')
-enemies = [assassin, baby]
+enemies = (assassin, baby)
 
 # Set up helpers
 oldLady = Helper('old lady')
 gandalf = Helper('Gandalf')
 angel = Helper('angel')
-helpers = [oldLady, gandalf, angel]
+helpers = (oldLady, gandalf, angel)
 
 stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.') 
 gun = Weapon('gun', 50, 'projectile', 100, '3expensive5me')  
@@ -437,16 +438,16 @@ potato = Food('potato', 2, 2, 'Doesn\'t heal much, but it\'s nice and cheap.')
 bread = Food('bread', 5, 5, 'Much more substantial food.')
 healthPotion = Food('health potion', 80, 60, 'Will heal you right up--but it comes with a price.')
 
-weapons = [knife, gun, cane, fist, sword]
-helperItems = [potato, bread, healthPotion]
-specialWeapons = [grenade]
-peopleHelpers = [oldLady]
+weapons = (knife, gun, cane, fist, sword)
+helperItems = (potato, bread, healthPotion)
+specialWeapons = (grenade,)
+peopleHelpers = (oldLady,)
 
 foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
 foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
 weaponTrader = Vendor('weapon trader', 'I sell things to help you more efficiently kill people.')
 weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
-vendors = [foodMerchant, weaponTrader]
+vendors = (foodMerchant, weaponTrader)
 
 argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
 argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
