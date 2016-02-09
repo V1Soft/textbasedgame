@@ -5,29 +5,19 @@ import sys
 import shelve
 import time
 
-from obj import *
 from entities import *
 from languages import *
 
 
 # Util. Functions
-def yesorno(x=''):
-    if x == '':
-        user = input(x)
-        if user.lower() == 'y' or user.lower() == 'yes':
-            return 'yes'
-        elif user.lower() == 'n' or user.lower() == 'no':
-            return 'no'
-        else:
-            print("Lel")
+def confirm(prompt=''):
+    user = input(prompt)
+    if user.lower() == 'y' or user.lower() == 'yes':
+        return True
+    elif user.lower() == 'n' or user.lower() == 'no':
+        return False
     else:
-        user = input()
-        if user.lower() == 'y' or 'yes':
-            return 'yes'
-        elif user.lower() == 'n' or user.lower() == 'no':
-            return 'no'
-        else:
-            print("lel")
+        return False
 
 
 def choosePerson():  # Choose person to interact with
@@ -78,12 +68,12 @@ def personInteraction():
     newPerson = chosenThings[0]  # Get person from chosenThings list
     npi = chosenThings[1]
     if isinstance(newPerson, Helper):
-        command = input('You see a kind-looking person in the distance. Do you choose to approach? (y/n) : ')
+        print('You see a kind-looking person in the distance. Do you choose to approach? (y/n) : ')
     else:
-        command = input('You see a mean-looking person in the distance. Do you choose to approach? (y/n) : ')
+        print('You see a mean-looking person in the distance. Do you choose to approach? (y/n) : ')
     time.sleep(2)
     while True:
-        if yesorno() == 'yes':
+        if confirm():
             print('The person is a(n) ' + newPerson.name + '!')
             if isinstance(newPerson, Helper):
                 if newPerson == oldLady:
