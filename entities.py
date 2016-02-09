@@ -43,9 +43,11 @@ vendors = [foodMerchant, weaponTrader]
 World = World(0, 37)
 
 # Command line parsing
+
 argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
 argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
-argparser.add_argument('-lg', '--load-game', help='Load existing game', action='store_true')
+argparser.add_argument('-l', '--load-game', help='Load existing game', action='store_true')
+argparser.add_argument('-d', '--dev-mode', help='Start textbasedgame in Developer mode', action='store_true')
 args = argparser.parse_args()
 
 if __name__ == '__main__':

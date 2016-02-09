@@ -6,7 +6,11 @@ import shelve
 import time
 
 from obj import *
+<<<<<<< HEAD
 from entities import *
+=======
+from languages import *
+>>>>>>> 18961ad72d41f1a27e963cf4efe56f8e105442c0
 
 
 # Util. Functions
@@ -77,12 +81,16 @@ def personInteraction():
     newPerson = chosenThings[0]  # Get person from chosenThings list
     npi = chosenThings[1]
     if isinstance(newPerson, Helper):
-        print('You see a kind-looking person in the distance. Do you choose to approach (y/n)?')
+        command = input('You see a kind-looking person in the distance. Do you choose to approach? (y/n) : ')
     else:
-        print('You see a mean-looking person in the distance. Do you choose to approach (y/n)?')
+        command = input('You see a mean-looking person in the distance. Do you choose to approach? (y/n) : ')
     time.sleep(2)
     while True:
+<<<<<<< HEAD
         if yesorno() == 'yes':
+=======
+        if command.upper() == 'Y':
+>>>>>>> 18961ad72d41f1a27e963cf4efe56f8e105442c0
             print('The person is a(n) ' + newPerson.name + '!')
             if isinstance(newPerson, Helper):
                 if newPerson == oldLady:
@@ -115,60 +123,60 @@ def fight(person, weapon):
         commandLine()
     for choice in interactoptions:
         print(choice)
-    while True:
-        command = input(": ")
-        if command == "1" or command.upper() == "FIGHT":
-            break
-        elif command == "2" or command.upper() == "ACT":
-            print("You " + str(person.acts) + " the " + str(person.name) + ".")
+    while hero.health > 1 and person.health > 1:
+        command = input('Interact : ').split(" ")
+        if command[0] == "1" or command[0].upper() == "FIGHT":
+            continue
+        elif command[0] == "2" or command[0].upper() == "ACT":
+            print("You " +  str(person.acts) + " the " + str(person.name) + ".")
             if random.randint(0, 100) % 2 == 0:
                 print("The " + str(person.name) + " runs away")
                 commandLine()
             else:
                 print("...But it didn't work")
                 break
-        elif command == "3" or command.upper() == "ITEM":
+        elif command[0] == '3' or command[0].upper() == 'ITEM':
             for item in inventory:
                 if item in weapons or item in specialWeapons:
                     print(item.name)
-            command = input("What do you want to use?: ")
-            if command.startswith('eat'):
-                # failed = False
-                foodToEat = command[4:]  # Get food out of command string
+            if command[1] == 'eat':
+                failed = False
                 for item in inventory:
-                    if item.name == foodToEat:
+                    if item.name == command[2]:
                         if isinstance(item, Food):
                             inventory.remove(item)
                             hero.health += item.hp
                             print('%s points added to health!' % (item.hp))
-                            # failed = False
+                            failed = False
                             break
                         else:
                             print("You cannot eat that")
                             break
                         break
-            elif command.startswith('use'):
-                touse = command[4:]
+            elif command[1] == 'use':
                 for item in inventory:
-                    if item.name == touse:
+                    if item.name == command[2]:
                         if item.itemtype == 'bomb':
                             print("The " + item.name + " exploded")
                             print("The %s took %s damage!" % (person.name, item.power))
                             person.health -= item.power
                             inventory.remove(item)
                             break
-            elif command.startswith('throw'):
-                tothrow = command[6:]
+                        else:
+                            print("The %s took %s damage!" %(person.name, item.power))
+                            person.health -= item.power
+                            inventory.remove(item)
+                            break
+            elif command[1] == 'throw':
                 for item in inventory:
-                    if item.name == tothrow:
+                    if item.name == command[2]:
                         inventory.remove(item)
                         print("You threw away the %s" % (item.name))
                         break
                 break
             else:
                 print("It does not seem you have that item")
-                break
-        elif command == "4" or command.upper() == "SPARE":
+        elif command[0] == "4" or command[0].upper() == "SPARE":
             print("You ran away")
             commandLine()
     while True:
@@ -238,15 +246,11 @@ def loadInfo(wantedInfo):
 
 def market():
     def goToVendor(vendor):
-        print(vendor.message)
-        print('Type an item\'s name to purchase it.')
-        print('Type "info <item>" for more information on an item.')
-        print('Type "exit" to leave the store.')
-        print('Items for sale:')
+        print('%s\nItems for sale:' %(vendor.message))
         vendor.say(vendor.goods)
         while True:
-                command = input(': ')
-                # commandRun = False
+                command = input('\nMarket > %s : ' %(vendor.name))
+                commandRun = False
                 thingToBuy = None
                 for good in vendor.goods:
                     if good.name == command:
@@ -276,23 +280,107 @@ def market():
                 elif command == 'exit':
                     print('You left the store.')
                     return
-
-    print('Vendors:')
+    print('''
++-----------------------------------------------------+
+| Welcome to the Market!                              |
+| Type an item\'s name to purchase it.                |
+| Type "info <item>" for more information on an item. |
+| Type "exit" to leave the store.                     |
++-----------------------------------------------------+
+''')
+    print('\nVendors:')
     for vendor in vendors:
-        print(vendor.name)
-
-    print('Please type the vendor you want to visit.')
+        print('\t%s' %(vendor.name))
+        
+    print('\nPlease type the vendor you want to visit.')
     isVendor = False
     while not isVendor:
-        command = input()
+        command = input('\nMarket : ')
         for vendor in vendors:
             if vendor.name == command:
                 vendorToVisit = vendor
                 isVendor = True
+                break
+            elif command == 'exit':
+                print('You left the store.')
+                return
             else:
                 print('Vendor not found.')
+                break
 
     goToVendor(vendorToVisit)
+
+def get(weapon):
+    inventory.append(weapon)
+
+def devMode():
+    global inventory
+    print('Type "help" for help.')
+    while True:
+        try:
+            inventory = [stick, gun, cane, fist, sword, knife, grenade, potato, bread, healthPotion]
+            command = input(': ')
+            if command == 'help':
+                print('Possible commands:')
+                for command in possibleCommands:
+                    print(command)
+
+            elif command == 'interact':
+                personInteraction()
+
+            elif command == 'money':
+                print(hero.money)
+
+            elif command == 'market':
+                market()
+
+            elif command == 'inventory':
+                for item in inventory:
+                    if isinstance(item, Weapon):
+                        print(item.name + ': ' + str(item.power) + ' power')
+                    elif isinstance(item, Food):
+                        print(item.name + ': Restores ' + str(item.hp) + ' health')
+                    else:
+                        print(item.name)
+
+            elif command == 'health':
+                print(hero.health)
+            
+            elif command == 'quit':
+                choice = input('Are you sure you want to quit? Your progress will be saved. (y/n) : ')
+                if choice == 'y' or choice == 'yes':
+                    quitGame()
+                else:
+                    print('Cancelled.')
+         
+            elif command == 'reset':
+                choice = input('Are you sure you want to reset all data? (y/n) : ')
+                if choice == 'y' or choice == 'yes':
+                    saveInfo('firstTime', True)
+                else:
+                    print('Cancelled.')
+            elif command.startswith('eat'):
+                failed = False
+                foodToEat = command[4:] # Get food out of command string
+                for item in inventory:
+                    if item.name == foodToEat:
+                        if isinstance(item, Food):
+                            inventory.remove(item)
+                            hero.health += item.hp
+                            print('%s points added to health!' %(item.hp))
+                            failed = False
+                            break
+					
+                if failed != False:
+                    print('Food not in inventory.')
+            elif command.startswith('get'):
+                weapon = command[4:]
+                get(weapon)
+            else:
+                print('Command not found. Type "help" for help.')
+
+        except KeyboardInterrupt or EOFError:
+            quitGame()
 
 
 def commandLine():
@@ -329,16 +417,14 @@ def commandLine():
                 print(hero.health)
 
             elif command == 'quit':
-                print('Are you sure you want to quit? Your progress will be saved.')
-                choice = input()
+                choice = input('Are you sure you want to quit? Your progress will be saved. (y/n) : ')
                 if choice == 'y' or choice == 'yes':
                     quitGame()
                 else:
                     print('Cancelled.')
 
             elif command == 'reset':
-                print('Are you sure you want to reset all data?')
-                choice = input()
+                choice = input('Are you sure you want to reset all data? (y/n) : ')
                 if choice == 'y' or choice == 'yes':
                     saveInfo('firstTime', True)
                 else:
@@ -374,32 +460,45 @@ def quitGame():
         saveInfo('heroPower', hero.power)
         saveInfo('money', hero.money)
         saveInfo('firstTime', False)
+        saveInfo('language', language)
         print('Progress saved.')
         sys.exit()
 
 
 def newGame():
-    global inventory
+    global inventory, language
     inventory = [stick, potato]
     hero.health = 100
     hero.money = 100
     hero.power = float(5)
-    print('New game set up. Welcome!')
+    print('What is your desired language?')
+    #print('¿Qué idioma tú quieres?') # Broken
+    for language in languages:
+        print(language)
+    language = input(': ')
+    if language in languages:
+        language = Language(language)
+        print(language.langwelcome)
+    else:
+        print('Incorrect language given. Defaulting to English.')
+        language = Language('en')
+    print(language.welcome)
     saveInfo('firstTime', False)
     commandLine()
 
 
 def loadGame():
-    global inventory
+    global inventory, language
     try:
         inventory = loadInfo('inventory')
         hero.health = loadInfo('health')
         hero.money = loadInfo('money')
         hero.power = loadInfo('heroPower')
+        language = loadInfo('language')
         print('Previous game save loaded.')
         commandLine()
     except KeyError:
-        print('Savefile does not exist. Creating new savefile...')
+        print('Savefile does not exist or is broken. Creating new savefile...')
         newGame()
 
 
@@ -415,24 +514,33 @@ def play():
 
 Do you want to:
 1. Start a new game (new)
-2. Continue from a previous save (continue) or
-3. Exit the game (quit)
+2. Continue from a previous save (continue)
+3. Start textbasedgame in cheat (cheats) or
+4. Exit the game (quit)
             ''')
             choice = input(': ')
             if choice == 'new' or choice == '1':
-                print('Are you sure you want to reset all data?')
-                choice = input(': ')
+                choice = input('Are you sure you want to reset all data? (y/n) : ')
                 if choice.upper() == 'Y' or choice == 'yes':
                     newGame()
                 else:
                     print('Cancelled.')
             elif choice == 'continue' or choice == '2':
                 loadGame()
-            elif choice == 'quit' or choice == '3':
+            elif choice == 'cheats' or choice == '3':
+                global inventory
+                inventory = [stick, potato]
+                hero.health = 100
+                hero.money = 100
+                hero.power = float(5)
+                print('New game set up. Welcome!')
+                saveInfo('firstTime', False)
+                devMode()
+            elif choice == 'quit' or choice == '4':
                 sys.exit(0)
             else:
                 while True:
-                    choice = input('Invalid option: Do you want to quit (Y/n)')
+                    choice = input('Invalid option: Do you want to quit (y/n) : ')
                     if choice.upper() == 'Y' or choice == 'yes':
                         sys.exit(0)
                     else:
@@ -454,11 +562,13 @@ possibleCommands = ['help--show this message',
 
 interactoptions = ['fight', 'act', 'item', 'spare']
 
-hero = Player('nil', 100, 100, 9000)
+hero = Player('nil', 100, 100, 9000)                       
 
 if args.reset:
     newGame()
 elif args.load_game:
     loadGame()
+elif args.dev_mode:
+    devMode()
 else:
     play()
