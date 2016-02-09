@@ -426,7 +426,7 @@ def newGame():
     #print('¿Qué idioma tú quieres?') # Broken
     for language in languages:
         print(language)
-    language = input()
+    language = input(': ')
     if language in languages:
         language = Language(language)
         print(language.langwelcome)
