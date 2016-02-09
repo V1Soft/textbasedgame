@@ -7,7 +7,7 @@ import shelve
 import time
 
 from obj import *
-#from languages import *
+from languages import *
 
 def choosePerson(): # Choose person to interact with
     personType = random.randint(1, 2)
@@ -332,32 +332,45 @@ def quitGame():
         saveInfo('heroPower', hero.power)
         saveInfo('money', hero.money)
         saveInfo('firstTime', False)
+        saveInfo('language', language)
         print('Progress saved.')
         sys.exit()
         
         
 def newGame():
-    global inventory
+    global inventory, language
     inventory = [stick, potato]
     hero.health = 100
     hero.money = 100
     hero.power = float(5)
-    print('New game set up. Welcome!')
+    print('What is your desired language?')
+    print('¿Qué idioma tú quieres?')
+    for language in languages:
+        print(language)
+    language = input()
+    if language in languages:
+        language = Language(language)
+        print(language.langwelcome)
+    else:
+        print('Incorrect language given. Defaulting to English.')
+        language = Language('en')
+    print(language.welcome)
     saveInfo('firstTime', False)
     commandLine()
     
 
 def loadGame():
-    global inventory
+    global inventory, language
     try:
         inventory = loadInfo('inventory')
         hero.health = loadInfo('health')
         hero.money = loadInfo('money')
         hero.power = loadInfo('heroPower')
+        language = loadInfo('language')
         print('Previous game save loaded.')
         commandLine()
     except KeyError:
-        print('Savefile does not exist. Creating new savefile...')
+        print('Savefile does not exist or is broken. Creating new savefile...')
         newGame()
     
 
