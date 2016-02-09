@@ -107,19 +107,18 @@ def fight(person, weapon):
         commandLine()
     for choice in interactoptions:
         print(choice)
-    while hero.health > 1 and person.health > 1:
+    while hero.health > 0 and person.health > 0:
         command = input('Interact : ').split(" ")
-        if command[0] == "1" or command[0].upper() == "FIGHT":
-            continue
-        elif command[0] == "2" or command[0].upper() == "ACT":
+        if command[0] == "1" or command[0].lower() == "act":
             print("You " +  str(person.acts) + " the " + str(person.name) + ".")
-            if random.randint(0, 100) % 2 == 0:
-                print("The " + str(person.name) + " runs away")
-                commandLine()
+            time.sleep(.25)
+            if random.randint(0, 1) == 0:
+                print("The " + str(person.name) + " runs away.")
+                return
             else:
-                print("...But it didn't work")
+                print("...But it didn't work.")
                 break
-        elif command[0] == '3' or command[0].upper() == 'ITEM':
+        elif command[0] == '2' or command[0].lower() == 'item':
             for item in inventory:
                 if item in weapons or item in specialWeapons:
                     print(item.name)
@@ -139,16 +138,24 @@ def fight(person, weapon):
             elif command[1] == 'use':
                 for item in inventory:
                     if item.name == command[2]:
-                        if item.itemtype == 'bomb':
-                            print("The " + item.name + " exploded")
-                            print("The %s took %s damage!" % (person.name, item.power))
-                            person.health -= item.power
-                            inventory.remove(item)
+                        if isinstance(item, Weapon):
+                            if item.itemtype == 'bomb':
+                                print("The " + item.name + " exploded")
+                                print("The %s took %s damage!" % (person.name, item.power))
+                                person.health -= item.power
+                                inventory.remove(item)
+                                break
+                            else:
+                                print("The %s took %s damage!" %(person.name, item.power))
+                                person.health -= item.power
+                                inventory.remove(item)
+                                break
+                        elif isinstance(item, Food):
+                            inventory -= item
+                            hero.health += item.hp
                             break
                         else:
-                            print("The %s took %s damage!" %(person.name, item.power))
-                            person.health -= item.power
-                            inventory.remove(item)
+                            print('Can\'t use item.')
                             break
             elif command[1] == 'throw':
                 for item in inventory:
@@ -158,10 +165,12 @@ def fight(person, weapon):
                         break
                 break
             else:
-                print("It does not seem you have that item")
-        elif command[0] == "4" or command[0].upper() == "SPARE":
+                print("Item command not found.")
+        elif command[0] == "3" or command[0].lower() == "retreat":
             print("You ran away")
-            commandLine()
+            return
+        elif command[0] == '4' or command[0].lower() == 'auto':
+            break
     while True:
         hero.hit(weapon.power + person.power)  # Remove health from player
         personHealth -= getBestInventoryWeapon() + hero.power  # Remove health of opponent
@@ -578,7 +587,7 @@ possibleCommands = ['help—show this message',
                     'eat <food>—consume food and restore health',
                     'temp—get current temperature']
 
-interactoptions = ['fight', 'act', 'item', 'spare']
+interactoptions = ('act', 'item', 'retreat', 'auto')
 
 hero = Player('nil', 100, 100, 9000)                       
 
