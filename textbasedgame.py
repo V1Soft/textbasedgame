@@ -8,6 +8,18 @@ import time
 
 from obj import *
 from languages import *
+# from entities import *
+
+
+def confirm(prompt=''):
+    user = input(prompt)
+    if user.lower() == 'y' or user.lower() == 'yes':
+        return True
+    elif user.lower() == 'n' or user.lower() == 'no':
+        return False
+    else:
+        return False
+
 
 def getBestInventoryWeapon():
     bestItemPower = 0
@@ -76,7 +88,7 @@ def fight(person, weapon):
         player.health += weapon.hp
         print("The " + str(player.location.entity.name) + " ran away")
         commandLine()
-    for choice in interactoptions:
+    for choice in ['fight', 'act', 'item', 'retreat', 'auto']:
         print(choice)
     while player.health > 1 and player.location.entity.health > 1:
         command = input('Interact : ').split(" ")
@@ -130,11 +142,13 @@ def fight(person, weapon):
                         break
                 break
             else:
-                print("It does not seem you have that item")
-        elif command[0] == "4" or command[0].upper() == "SPARE":
-            print("You ran away")
+                print("Item command not found.")
+        elif command[0] == "4" or command[0].upper() == "RETREAT":
+            print("You ran away.")
             player.location.entity = None
-            commandLine()
+            return
+        elif command[0] == '5' or command[0].upper() == "AUTO":
+            break
     while True:
         player.hit(weapon.power + player.location.entity.power) # Remove health from player
         player.location.entity.health -= getBestInventoryWeapon() + player.power # Remove health of opponent
@@ -185,12 +199,12 @@ def fight(person, weapon):
             break
 
 def saveInfo(name, info):
-    saveFile = shelve.open('savefile')
+    saveFile = shelve.open('gamesave.db')
     saveFile[name] = info
     saveFile.close()
 
 def loadInfo(wantedInfo):
-    saveFile = shelve.open('savefile')
+    saveFile = shelve.open('gamesave.db')
     info = saveFile[wantedInfo]
     return info
 
@@ -336,9 +350,10 @@ def exec(command):
         elif command[1].upper() == 'INVENTORY':
             print('Entering Inventory...')
             inventory()
+        else:
+            print('Location not found.')
     elif command[0].upper() == 'QUIT':
-        choice = input('Are you sure you want to quit? Your progress will be saved. (y/n) : ')
-        if choice.upper() == 'Y' or choice.upper() == 'YES':
+        if confirm('Are you sure you want to quit? Your progress will be saved. (y/n) '):
             quitGame()
         else:
             print('Cancelled.')
@@ -346,7 +361,7 @@ def exec(command):
     elif command[0].upper() == 'RESET':
         choice = input('Are you sure you want to reset all data? (y/n) : ')
         if choice == 'y' or choice == 'yes':
-            saveInfo('firstTime', True)
+            newGame()
         else:
             print('Cancelled.')
 
@@ -399,7 +414,7 @@ def quitGame():
         saveInfo('previousCommand', player.previousCommand)
         saveInfo('entities', entities)
         saveInfo('player.' + player.name, player)
-        saveInfo('firstTime', False)
+#        saveInfo('firstTime', False)
         print('Progress saved.')
         sys.exit()
 
@@ -421,7 +436,7 @@ def newGame():
         print('Incorrect language given. Defaulting to English.')
         player.language = Language('en')
         print(player.language.langwelcome)
-    saveInfo('firstTime', False)
+#    saveInfo('firstTime', False)
     commandLine()
 
 def loadGame():
@@ -478,7 +493,7 @@ Do you want to:
                 player.money = 100
                 player.power = float(5)
                 print('New game set up. Welcome!')
-                saveInfo('firstTime', False)
+#                saveInfo('firstTime', False)
                 devMode()
             elif choice == 'quit' or choice == '4':
                 sys.exit(0)
@@ -498,7 +513,6 @@ possibleCommands = ['help -- show this message',
                     'quit--quit game',
                     'reset--reset progress']
 
-interactoptions = ['fight', 'act', 'item', 'spare']
 
 player = Player('nil', 100, 100, 9000)                       
 
