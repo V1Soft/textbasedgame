@@ -470,13 +470,16 @@ def loadGame():
         print('List of users:')
         users = []
         for file in os.listdir(fileDir + '/saves'):
-            if file.endswith('.save'):
+            if file.endswith('.save') and file != 'dev.save':
                 print(file[:-5])
                 users.append(file[:-5])
         usr = input('What is your username? : ')
-        if usr not in users:
+        if usr not in users and usr != 'dev':
             print('User not found. Creating new user...')
             newGame()
+        elif usr == 'dev':
+                print('Access cheat mode with textbasedgame.py -d.')
+                sys.exit(1)
         entities = loadInfo(usr, 'entities')
         player = loadInfo(usr, 'player.' + usr)
         previousCommand = loadInfo(usr, 'previousCommand')
