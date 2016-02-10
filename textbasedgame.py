@@ -478,7 +478,7 @@ Do you want to:
             ''')
             choice = input(': ')
             if choice == 'new' or choice == '1':
-                choice = input('Are you sure you want to reset all data? (y/n) : ')
+                choice = input('Are you sure you want to reset all data for this user? (y/n) : ')
                 if choice.upper() == 'Y' or choice == 'yes':
                     newGame()
                 else:
