@@ -289,7 +289,7 @@ def inventory():
     while True:
         command = input('Inventory : ').split(" ")
         if command[0] == '.':
-            exec(previousCommand)
+            execute(previousCommand)
 
         elif command[0] == '?' or command[0].upper() == 'HELP':
             print()
@@ -337,10 +337,12 @@ def inventory():
         else:
             print('Inventory command "' + command[0] + '" not found. Type "help" for help.')
 
+
 def get(weapon):
     player.inventory.append(weapon)
 
-def exec(command):
+
+def execute(command):
     command = command.split(" ")
     if command[0] == '?' or command[0].upper() == 'HELP':
         print('Possible commands:')
@@ -382,32 +384,32 @@ def devMode():
             command = input(': ')
             if command == '.':
                 if previousCommand != None:
-                    exec(previousCommand)
+                    execute(previousCommand)
                 else:
                     print('No previous command set')
             elif command.startswith('get'):
                 weapon = command[4:]
                 get(weapon)
             else:
-                exec(command)
+                execute(command)
                 previousCommand = command
 
         except KeyboardInterrupt or EOFError:
             quitGame()
 
 def commandLine():
-    global entities
+    global entities, previousCommand
     print('Type "help" for help.')
     while True:
         try:
             command = input(': ')
             if command == '.':
                 if previousCommand != None:
-                    exec(previousCommand)
+                    execute(previousCommand)
                 else:
                     print('No previous command set')
             else:
-                exec(command)
+                execute(command)
                 previousCommand = command
 
         except KeyboardInterrupt or EOFError:
@@ -444,7 +446,7 @@ def newGame():
     commandLine()
 
 def loadGame():
-    global player, entities, usr
+    global player, entities, usr, previousCommand
     try:
         print('List of users:')
         users = []
@@ -458,6 +460,7 @@ def loadGame():
             newGame()
         entities = loadInfo(usr, 'entities')
         player = loadInfo(usr, 'player.' + usr)
+        previousCommand = loadInfo(usr, 'previousCommand')
         print('Game save loaded.')
         try:
             if player.location.name == 'Inventory':
