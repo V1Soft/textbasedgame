@@ -200,13 +200,13 @@ def fight(person, weapon):
             player.location.entity = None
             break
 
-def saveInfo(name, info):
-    saveFile = shelve.open(fileDir + '/gamesave.db')
+def saveInfo(username, name, info):
+    saveFile = shelve.open(fileDir + '/saves/%s.save' % username)
     saveFile[name] = info
     saveFile.close()
 
-def loadInfo(wantedInfo):
-    saveFile = shelve.open(fileDir + '/gamesave.db')
+def loadInfo(username, wantedInfo):
+    saveFile = shelve.open(fileDir + '/saves/%s.save' % username)
     info = saveFile[wantedInfo]
     return info
 
@@ -413,9 +413,9 @@ def commandLine():
 
 def quitGame():
         print('Saving progress...')
-        saveInfo('previousCommand', player.previousCommand)
-        saveInfo('entities', entities)
-        saveInfo('player.' + player.name, player)
+        saveInfo(usr, 'previousCommand', player.previousCommand)
+        saveInfo(usr, 'entities', entities)
+        saveInfo(usr, 'player.' + player.name, player)
 #        saveInfo('firstTime', False)
         print('Progress saved.')
         sys.exit()
@@ -442,12 +442,21 @@ def newGame():
     commandLine()
 
 def loadGame():
-    global player, entities
+    global player, entities, usr
     try:
+        print('List of users:')
+        users = []
+        for file in os.listdir(fileDir + '/saves'):
+            if file.endswith('.save'):
+                print(file[:-5])
+                users.append(file[:-5])
         usr = input('What is your username? : ')
-        entities = loadInfo('entities')
-        player = loadInfo('player.' + usr)
-        print('Previous game save loaded.')
+        if usr not in users:
+            print('User not found. Creating new user...')
+            newGame()
+        entities = loadInfo(usr, 'entities')
+        player = loadInfo(usr, 'player.' + usr)
+        print('Game save loaded.')
         try:
             if player.location.name == 'Inventory':
                 inventory()
