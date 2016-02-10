@@ -13,14 +13,23 @@ from languages import *
 # from entities import *
 
 
-def confirm(prompt=''):
-    user = input(prompt)
-    if user.lower() == 'y' or user.lower() == 'yes':
-        return True
-    elif user.lower() == 'n' or user.lower() == 'no':
-        return False
+def confirm(prompt='', default=True):
+    if default:
+        answer = input(prompt + ' (Y/n)')
+        if answer.lower() == 'y' or answer.lower() == 'yes' or answer == '':
+            return True
+        elif answer.lower() == 'n' or answer.lower() == 'no':
+            return False
+        else:
+            return False
     else:
-        return False
+        answer = input(prompt + ' (y/N)')
+        if answer.lower() == 'y' or answer.lower() == 'yes':
+            return True
+        elif answer.lower() == 'n' or answer.lower() == 'no':
+            return False
+        else:
+            return False
 
 
 def getBestInventoryWeapon():
@@ -37,33 +46,29 @@ def personInteraction():
     player.location = locationInteract
     personType = random.randint(1, 3)
     if personType == 1:
-        command = input('You see a mean-looking person in the distance. Do you choose to approach? (y/n) : ')
         person = [random.choice(enemies), random.choice(weapons)]
-        if command.upper() == 'Y':
+        if confirm('You see a mean-looking person in the distance. Do you choose to approach?'):
             fight(person[0], person[1])
         else:
             print('You run away in fear.')
     elif personType == 2:
         if entities:
-            command = input('You see a familier, mean-looking person in the distance. Do you choose to approach? (y/n) : ')
             person = random.choice(entities)
             person.inventory.append(random.choice(weapons))
-            if command.upper() == 'Y':
+            if confirm('You see a familiar, mean-looking person in the distance. Do you choose to approach?'):
                 fight(person, person.inventory[0])
             else:
                 print('You run away in fear.')
         else:
-            command = input('You see a mean-looking person in the distance. Do you choose to approach? (y/n) : ')
             person = random.choice(enemies)
             person.inventory.append(random.choice(weapons))
-            if command.upper() == 'Y':
+            if confirm('You see a mean-looking person in the distance. Do you choose to approach?'):
                 fight(person, person.inventory[0])
             else:
                 print('You run away in fear.')
     else:
-        command = input('You see a kind-looking person in the distance. Do you choose to approach? (y/n) : ')
         person = [random.choice(helpers), random.choice(helperItems)]
-        if command.upper() == 'Y':
+        if confirm('You see a kind-looking person in the distance. Do you choose to approach?'):
             print('The person is a(n) ' + person[0].name + '!')
             if person[0] == oldLady:
                 fight(badOldLady, cane)
@@ -355,14 +360,13 @@ def exec(command):
         else:
             print('Location not found.')
     elif command[0].upper() == 'QUIT':
-        if confirm('Are you sure you want to quit? Your progress will be saved. (y/n) '):
+        if confirm('Are you sure you want to quit? Your progress will be saved.', True):
             quitGame()
         else:
             print('Cancelled.')
 
     elif command[0].upper() == 'RESET':
-        choice = input('Are you sure you want to reset all data? (y/n) : ')
-        if choice == 'y' or choice == 'yes':
+        if confirm('Are you sure you want to reset all data?', False):
             newGame()
         else:
             print('Cancelled.')
@@ -489,11 +493,7 @@ Do you want to:
             ''')
             choice = input(': ')
             if choice == 'new' or choice == '1':
-                choice = input('Are you sure you want to reset all data for this user? (y/n) : ')
-                if choice.upper() == 'Y' or choice == 'yes':
                     newGame()
-                else:
-                    print('Cancelled.')
             elif choice == 'continue' or choice == '2':
                 loadGame()
             elif choice == 'cheats' or choice == '3':
@@ -510,8 +510,7 @@ Do you want to:
                 sys.exit(0)
             else:
                 while True:
-                    choice = input('Invalid option: Do you want to quit (y/n) : ')
-                    if choice.upper() == 'Y' or choice == 'yes':
+                    if confirm('Invalid option. Do you want to quit?'):
                         sys.exit(0)
                     else:
                         break
