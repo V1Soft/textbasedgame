@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import argparse
 import inspect
 import os
 import random
@@ -8,7 +7,6 @@ import sys
 import shelve
 import time
 
-from obj import *
 from languages import *
 from entities import *
 
@@ -34,12 +32,15 @@ def confirm(prompt='', default=True):
 
 def getBestInventoryWeapon():
     bestItemPower = 0
+    bestItem = None
     for item in player.inventory:
         if isinstance(item, Weapon):
             weapPwr = item.power
             if weapPwr > bestItemPower:
                 bestItemPower = weapPwr
-    return bestItemPower, item
+                bestItem = item
+    return bestItemPower, bestItem
+
 
 def personInteraction():
     global entities
@@ -74,13 +75,14 @@ def personInteraction():
                 fight(badOldLady, cane)
                 return
             time.sleep(0.5)
-            print('The %s smiles and holds a(n) %s out in her hand.' %(person[0].name, person[1].name))
+            print('The %s smiles and holds a(n) %s out in her hand.' % (person[0].name, person[1].name))
             player.inventory.append(person[1])
             time.sleep(0.2)
             print(person[1].name + ' added to your inventory!')
         else:
             print('You walk away')
     time.sleep(2)
+
 
 def fight(person, weapon):
     global entities
@@ -90,7 +92,7 @@ def fight(person, weapon):
     time.sleep(0.5)
     print('The ' + str(player.location.entity.name) + ' pulls out a(n) ' + str(weapon.name) + ' threateningly.')
     time.sleep(1)
-    if isinstance(weapon, Food): # Code no longer relevant
+    if isinstance(weapon, Food):  # Code no longer relevant
         print("...So you took the " + str(weapon.name) + " and ate it")
         player.health += weapon.hp
         print("The " + str(player.location.entity.name) + " ran away")
@@ -102,7 +104,7 @@ def fight(person, weapon):
         if command[0] == "1" or command[0].upper() == "AUTO":
             break
         elif command[0] == "2" or command[0].upper() == "ACT":
-            print("You " +  str(player.location.entity.acts) + " the " + str(player.location.entity.name) + ".")
+            print("You " + str(player.location.entity.acts) + " the " + str(player.location.entity.name) + ".")
             if player.location.entity.acts == "pet":
                 print("The " + str(player.location.entity.name) + " runs away")
                 commandLine()
@@ -114,38 +116,35 @@ def fight(person, weapon):
                 if item in weapons or item in specialWeapons:
                     print(item.name)
             if command[1] == 'eat':
-                failed = False
                 for item in player.inventory:
                     if item.name == command[2]:
                         if isinstance(item, Food):
                             player.inventory.remove(item)
                             player.health += item.hp
-                            print('%s points added to health!' %(item.hp))
-                            failed = False
+                            print('%s points added to health!' % item.hp)
                             break
                         else:
                             print("You cannot eat that")
                             break
-                        break
             elif command[1] == 'use':
                 for item in player.inventory:
                     if item.name == command[2]:
                         if item.itemtype == 'bomb':
                             print("The " + item.name + " exploded")
-                            print("The %s took %s damage!" %(player.location.entity.name, item.power))
+                            print("The %s took %s damage!" % (player.location.entity.name, item.power))
                             player.location.entity.health -= item.power
                             player.inventory.remove(item)
                             break
                         else:
-                            print("The %s took %s damage!" %(player.location.entity.name, item.power))
+                            print("The %s took %s damage!" % (player.location.entity.name, item.power))
                             player.location.entity.health -= item.power
-                            #hero.inventory.remove(item)
+                            # hero.inventory.remove(item)
                             break
             elif command[1] == 'throw':
                 for item in player.inventory:
                     if item.name == command[2]:
                         player.inventory.remove(item)
-                        print("You threw away the %s" %(item.name))
+                        print("You threw away the %s" % item.name)
                         break
                 break
             else:
@@ -155,12 +154,12 @@ def fight(person, weapon):
             player.location.entity = None
             return
     while True:
-        player.hit(weapon.power + player.location.entity.power) # Remove health from player
-        player.location.entity.health -= getBestInventoryWeapon()[0] + player.power # Remove health of opponent
+        player.hit(weapon.power + player.location.entity.power)  # Remove health from player
+        player.location.entity.health -= getBestInventoryWeapon()[0] + player.power  # Remove health of opponent
         if player.health - (weapon.power + person.power) < 1 and person.health - (getBestInventoryWeapon()[0] + player.power) < 1:
             # In case of draw
             time.sleep(0.2)
-            print('You somehow managed to escape with %s health remaining.' %(player.health))
+            print('You somehow managed to escape with %s health remaining.' % player.health)
             entities.append(player.location.entity)
             player.location.entity = None
             break
@@ -169,16 +168,15 @@ def fight(person, weapon):
             # In case of loss
             time.sleep(0.2)
             print('You\'re dead!')
-            printedItems = 0
             for item in player.inventory:
-               if random.randint(1, 2) == 1 and item != stick:
-                   player.inventory.remove(item)
-                   player.location.entity.inventory.append(removedItems)
-                   print(str(item) + ' dropped from inventory.')
+                if random.randint(1, 2) == 1 and item != stick:
+                    player.inventory.remove(item)
+#                    player.location.entity.inventory.append(removedItems)
+                    print(str(item) + ' dropped from inventory.')
             droppedCoins = random.randint(0, int(player.money / 2))
             player.spend(droppedCoins)
             time.sleep(0.2)
-            print('You dropped %s coins on your death.' %(droppedCoins))
+            print('You dropped %s coins on your death.' % droppedCoins)
             player.location.entity.money += droppedCoins
             entities.append(player.location.entity)
             player.location.entity = None
@@ -195,23 +193,26 @@ def fight(person, weapon):
                     player.inventory.append(item)
                     player.location.entity.inventory.remove(item)
                 time.sleep(0.2)
-                print('%s added to inventory.' %(weapon.name))
-            coinsToAdd = person.power * 5 + random.randint(-4, 4) # Dropped coins is opponent pwr * 5 + randint
+                print('%s added to inventory.' % weapon.name)
+            coinsToAdd = person.power * 5 + random.randint(-4, 4)  # Dropped coins is opponent pwr * 5 + randint
             player.receive(coinsToAdd)
             time.sleep(0.2)
-            print('Opponent dropped %s coins' %(coinsToAdd))
+            print('Opponent dropped %s coins' % coinsToAdd)
             player.location.entity = None
             break
+
 
 def saveInfo(username, name, info):
     saveFile = shelve.open(fileDir + '/saves/%s.save' % username)
     saveFile[name] = info
     saveFile.close()
 
+
 def loadInfo(username, wantedInfo):
     saveFile = shelve.open(fileDir + '/saves/%s.save' % username)
     info = saveFile[wantedInfo]
     return info
+
 
 def market():
     player.location.name = locationMarket.name
@@ -227,22 +228,24 @@ def market():
     print('\nVendors:')
     for vendor in vendors:
         print('\t%s' % vendor.name)
-        print('\nPlease type the vendor you want to visit.')
-        isVendor = False
-        while not isVendor:
-            command = input('\nMarket : ')
-            for vendor in vendors:
-                if vendor.name == command:
-                    vendorToVisit = vendor
-                    isVendor = True
-                    break
-                elif command == 'exit':
-                    print('You left the store.')
-                    return
-                else:
-                    print('Vendor not found.')
-                    break
-        goToVendor(vendorToVisit)
+    print('\nPlease type the vendor you want to visit.')
+    isVendor = False
+    while not isVendor:
+        command = input('\nMarket : ')
+        for vendor in vendors:
+            if vendor.name == command:
+                vendorToVisit = vendor
+                isVendor = True
+                break
+
+        if command == 'exit':
+            print('You left the store.')
+            return
+        else:
+            print('Vendor or command not found.')
+            break
+    goToVendor(vendorToVisit)
+
 
 def goToVendor(vendor):
     global previousVendor, previousCommand
@@ -269,8 +272,8 @@ def goToVendor(vendor):
         if buying:
             player.inventory += thingToBuy
             player.spend(vendor.goods[thingToBuy].cost)
-            print('%s purchased for %s money.' %(thingToBuy.name, vendor.goods[thingToBuy].cost))
-        elif command[0] == ('info'):
+            print('%s purchased for %s money.' % (thingToBuy.name, vendor.goods[thingToBuy].cost))
+        elif command[0] == 'info':
             thingToGetInfoOn = command[1]
             itemInShop = False
             for item in vendor.goods:
@@ -281,9 +284,9 @@ def goToVendor(vendor):
                 print('Item not found.')
             else:
                 if isinstance(item, Weapon):
-                    print('Power: %s' %(item.power))
+                    print('Power: %s' % item.power)
                 elif isinstance(item, Food):
-                    print('Healing power: %s' %(item.hp))
+                    print('Healing power: %s' % item.hp)
                 print('Description: ' + item.description)
         elif command[0] == 'exit':
             print('You left the store.')
@@ -308,7 +311,7 @@ def inventory():
             previousCommand = command
         else:
             command = previousCommand
-        if command[0] == '.' :
+        if command[0] == '.':
             execute(previousCommand)
 
         elif command[0] == '?' or command[0].upper() == 'HELP':
@@ -322,8 +325,8 @@ def inventory():
                             print(item.name + ': Has ' + str(item.power) + ' power')
                 elif command[1].upper() == 'FOOD':
                     for item in player.inventory:
-                       if isinstance(item, Food):
-                           print(item.name + ': Restores ' + str(item.hp) + ' health')
+                        if isinstance(item, Food):
+                            print(item.name + ': Restores ' + str(item.hp) + ' health')
                 elif command[1].upper() == 'HEALTH':
                     print(player.health)
                 elif command[1].upper() == 'MONEY':
@@ -344,10 +347,10 @@ def inventory():
                     if isinstance(item, Food):
                         player.inventory.remove(item)
                         player.health += item.hp
-                        print('%s points added to health!' %(item.hp))
+                        print('%s points added to health!' % item.hp)
                         failed = False
                         break
-            if failed != False:
+            if failed:
                 print('Food not in Inventory.')
 
         elif command[0].upper() == 'EXIT':
@@ -393,6 +396,7 @@ def execute(command):
     else:
         print('Command not found. Type "help" or "?" for help.')
 
+
 def devMode():
     # global entities, previousCommand
     # player.language = Language('en')
@@ -418,6 +422,7 @@ def devMode():
     player.inventory = [stick, gun, cane, fist, sword, knife, grenade, potato, bread, healthPotion]
     commandLine()
 
+
 def commandLine():
     global entities, previousCommand
     print('Type "help" for help.')
@@ -425,7 +430,7 @@ def commandLine():
         try:
             command = input(': ')
             if command == '.':
-                if previousCommand != None:
+                if previousCommand is not None:
                     execute(previousCommand)
                 else:
                     print('No previous command set')
@@ -436,6 +441,7 @@ def commandLine():
         except KeyboardInterrupt or EOFError:
             quitGame()
 
+
 def quitGame():
     print('Saving progress...')
     saveInfo(usr, 'previousCommand', player.previousCommand)
@@ -444,10 +450,11 @@ def quitGame():
 #   saveInfo('firstTime', False)
     try:
         saveInfo(usr, 'previousVendor', previousVendor)
-    except:
+    except NameError:
         saveInfo(usr, 'previousVendor', None)
     print('Progress saved.')
     sys.exit()
+
 
 def newGame():
     global player, entities, usr
@@ -457,7 +464,7 @@ def newGame():
     player.inventory = [stick, potato]
     player.location = locationMain
     print('What is your desired language?')
-    #print('¿Qué idioma tú quieres?') # Broken
+    # print('¿Qué idioma tú quieres?') # Broken
     for language in languages:
         print(language)
     lang = input(': ')
@@ -494,9 +501,9 @@ def loadGame():
             if player.location.name == 'Inventory':
                 inventory()
             elif player.location.name == 'Market':
-                goToVendor(previousVendor)#player.location.entity)
+                goToVendor(previousVendor)  # player.location.entity)
             elif player.location.name == 'Interact':
-                #fight(player.location.entity, getBestInventoryWeapon()[1])
+                # fight(player.location.entity, getBestInventoryWeapon()[1])
                 inventory()
         except KeyboardInterrupt or EOFError:
             quitGame()
@@ -547,6 +554,7 @@ Do you want to:
                         break
     except EOFError or KeyboardInterrupt:
         sys.exit(0)
+
 
 # Get current file path
 fileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
