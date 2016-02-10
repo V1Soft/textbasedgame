@@ -398,28 +398,13 @@ def execute(command):
 
 
 def devMode():
-    # global entities, previousCommand
-    # player.language = Language('en')
-    # print('Type "help" for help.')
-    # while True:
-    #     try:
-    #         player.inventory = [stick, gun, cane, fist, sword, knife, grenade, potato, bread, healthPotion]
-    #         command = input(': ')
-    #         if command == '.':
-    #             if previousCommand != None:
-    #                 execute(previousCommand)
-    #             else:
-    #                 print('No previous command set')
-    #         elif command.startswith('get'):
-    #             weapon = command[4:]
-    #             get(weapon)
-    #         else:
-    #             execute(command)
-    #             previousCommand = command
-    #
-    #     except KeyboardInterrupt or EOFError:
-    #         quitGame()
+    global player, entities, usr
+    entities = []
+    usr = 'dev'
+    player = Player(usr, 100, 100, float(5))
     player.inventory = [stick, gun, cane, fist, sword, knife, grenade, potato, bread, healthPotion]
+    player.location = locationMain
+    player.language = Language('en')
     commandLine()
 
 
