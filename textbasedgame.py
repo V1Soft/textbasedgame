@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
 import argparse
-import random 
+import inspect
+import os
+import random
 import sys
 import shelve
 import time
@@ -199,12 +201,12 @@ def fight(person, weapon):
             break
 
 def saveInfo(name, info):
-    saveFile = shelve.open('gamesave.db')
+    saveFile = shelve.open(fileDir + '/gamesave.db')
     saveFile[name] = info
     saveFile.close()
 
 def loadInfo(wantedInfo):
-    saveFile = shelve.open('gamesave.db')
+    saveFile = shelve.open(fileDir + '/gamesave.db')
     info = saveFile[wantedInfo]
     return info
 
@@ -506,8 +508,10 @@ Do you want to:
                         break
     except EOFError or KeyboardInterrupt:
         sys.exit(0)
-        
-        
+
+# Get current file path
+fileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
 possibleCommands = ['help -- show this message',
                     'goto -- goto <location>, ex. goto inventory',
                     'quit--quit game',
