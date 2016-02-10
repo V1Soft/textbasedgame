@@ -245,8 +245,9 @@ def market():
         goToVendor(vendorToVisit)
 
 def goToVendor(vendor):
-    global previousVendor
+    global previousVendor, previousCommand
     previousVendor = vendor
+    previousCommand = None
     player.location.name = locationMarket.name
     player.location.description = locationMarket.description
     player.location.entity = vendor
@@ -256,6 +257,10 @@ def goToVendor(vendor):
         command = input('Market > %s : ' % vendor.name).split(' ')
         thingToBuy = None
         buying = False
+        if command[0] != '.':
+            previousCommand = command
+        else:
+            command = previousCommand
         for good in vendor.goods:
             if good.name == command[0]:
                 thingToBuy = good
@@ -291,12 +296,19 @@ def goToVendor(vendor):
         else:
             print('Command not found.')
 
+
 def inventory():
+    global previousCommand
     player.location.name = locationInventory.name
     player.location.description = locationInventory.description
+    previousCommand = None
     while True:
         command = input('Inventory : ').split(" ")
-        if command[0] == '.':
+        if command[0] != '.':
+            previousCommand = command
+        else:
+            command = previousCommand
+        if command[0] == '.' :
             execute(previousCommand)
 
         elif command[0] == '?' or command[0].upper() == 'HELP':
