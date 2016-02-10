@@ -1,6 +1,8 @@
 from obj import *
 import argparse
 
+player = Player('nil', 100, 100, 10)
+
 # Set up enemies
 assassin = Enemy('assassin', 100, 10, "pet")
 baby = Enemy('baby', 100, 1, "pet")
@@ -15,7 +17,6 @@ helpers = [oldLady, gandalf, angel]
 
 stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.')
 gun = Weapon('gun', 50, 'projectile', 100, '3expensive5me')
-
 cane = Weapon('cane', 6, 'sword', 5, 'The hidden power of old people everywhere')
 fist = Weapon('fist', 3, 'melee', 0, 'Ah...the sweetness of stealing a body part from your enemies...')
 sword = Weapon('sword', 40, 'sword', 80, 'Can slice even the most tough butter!')
@@ -33,16 +34,11 @@ helperItems = [potato, bread, healthPotion]
 specialWeapons = [grenade]
 peopleHelpers = [oldLady]
 
-foodMerchant = Vendor('food merchant', 'Hello! Welcome to my food store.')
-foodMerchant.goods = {bread: bread, potato: potato}  # dict so index can be accessed by name
-weaponTrader = Vendor('weapon trader', 'I sell things to help you more efficiently kill people.')
+foodMerchant = Vendor('food merchant', '\nHello! Welcome to my food store.')
+foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
+weaponTrader = Vendor('weapon trader', '\nI sell things to help you more efficiently kill people.')
 weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
-vendors = (foodMerchant, weaponTrader)
-
-# Create worlds
-World = World(0, 37)
-
-# Command line parsing
+vendors = [foodMerchant, weaponTrader]
 
 argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
 argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
@@ -50,5 +46,14 @@ argparser.add_argument('-l', '--load-game', help='Load existing game', action='s
 argparser.add_argument('-d', '--dev-mode', help='Start textbasedgame in Developer mode', action='store_true')
 args = argparser.parse_args()
 
+# Locations
+
+locationMain = Location('Main', 'Where it all begins.', None)
+locationInventory = Location('Inventory', 'Your Inventory.', None)
+locationMarket = Location('Market', 'The Market.', None)
+#locationMarketFood = Location('Food Store', 'Hello! Welcome to my food store.', foodMerchant)
+#locationMarketFood = Location('Weapons Shop', 'I sell things to help you more efficiently kill people.', weaponsTrader)
+locationInteract = Location('Interact', 'Interact with your Surroundings.', None)
+
 if __name__ == '__main__':
-    print("Why are you here?")
+    print('Go away.')

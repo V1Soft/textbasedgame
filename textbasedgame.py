@@ -39,7 +39,7 @@ def getBestInventoryWeapon():
             weapPwr = item.power
             if weapPwr > bestItemPower:
                 bestItemPower = weapPwr
-    return bestItemPower
+    return bestItemPower, item
 
 def personInteraction():
     global entities
@@ -156,8 +156,8 @@ def fight(person, weapon):
             return
     while True:
         player.hit(weapon.power + player.location.entity.power) # Remove health from player
-        player.location.entity.health -= getBestInventoryWeapon() + player.power # Remove health of opponent
-        if player.health - (weapon.power + person.power) < 1 and person.health - (getBestInventoryWeapon() + player.power) < 1:
+        player.location.entity.health -= getBestInventoryWeapon()[0] + player.power # Remove health of opponent
+        if player.health - (weapon.power + person.power) < 1 and person.health - (getBestInventoryWeapon()[0] + player.power) < 1:
             # In case of draw
             time.sleep(0.2)
             print('You somehow managed to escape with %s health remaining.' %(player.health))
@@ -465,7 +465,8 @@ def loadGame():
             elif player.location.name == 'Market':
                 goToVendor(player.location.entity)
             elif player.location.name == 'Interact':
-                fight(player.location.entity, player.location.entity.inventory[0])
+                #fight(player.location.entity, getBestInventoryWeapon()[1])
+                inventory()
         except KeyboardInterrupt or EOFError:
             quitGame()
         commandLine()
