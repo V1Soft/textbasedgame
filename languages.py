@@ -7,5 +7,7 @@ class Language(object):
         elif language == 'es':
             self.langwelcome = 'Estás usando español.'
             self.welcome = 'Un juego nuevo creado. ¡Bienvenido!'
+        else:
+            assert False, 'Invalid language'
 
 languages = ('en', 'es')
