@@ -253,21 +253,21 @@ def goToVendor(vendor):
     print('%s\nItems for sale:' % vendor.message)
     vendor.say(vendor.goods)
     while True:
-        command = input('\nMarket > %s : ' % vendor.name)
-        commandRun = False
+        command = input('Market > %s : ' % vendor.name).split(' ')
         thingToBuy = None
+        buying = False
         for good in vendor.goods:
-            if good.name == command:
+            if good.name == command[0]:
                 thingToBuy = good
+                buying = True
                 break
-        if thingToBuy == None and not command.startswith('info') and command != 'exit':
-            print('Item not found.')
-        elif not command.startswith('info') and command != 'exit':
+        if buying:
+            player.inventory += thingToBuy
             player.spend(vendor.goods[thingToBuy].cost)
-            player.inventory.append(thingToBuy)
             print('%s purchased for %s money.' %(thingToBuy.name, vendor.goods[thingToBuy].cost))
-        if command.startswith('info'):
-            thingToGetInfoOn = command[5:]
+        elif command[0] == ('info'):
+            thingToGetInfoOn = command[1]
+            itemInShop = False
             for item in vendor.goods:
                 if item.name == thingToGetInfoOn:
                     itemInShop = True
@@ -280,10 +280,16 @@ def goToVendor(vendor):
                 elif isinstance(item, Food):
                     print('Healing power: %s' %(item.hp))
                 print('Description: ' + item.description)
-        elif command == 'exit':
+        elif command[0] == 'exit':
             print('You left the store.')
-            player.location.entity = None
+            player.location.entity = locationMain
             return
+        elif command[0] == 'help':
+            storeHelp.prtMsg()
+        elif command[0] == 'money':
+            print(player.money + ' coins')
+        else:
+            print('Command not found.')
 
 def inventory():
     player.location.name = locationInventory.name
@@ -294,7 +300,7 @@ def inventory():
             execute(previousCommand)
 
         elif command[0] == '?' or command[0].upper() == 'HELP':
-            print()
+            inventoryHelp.prtMsg()
 
         elif command[0].upper() == 'LIST':
             if len(command) > 1:
@@ -302,7 +308,7 @@ def inventory():
                     for item in player.inventory:
                         if isinstance(item, Weapon):
                             print(item.name + ': Has ' + str(item.power) + ' power')
-                elif command[1].upper() == 'FOODS':
+                elif command[1].upper() == 'FOOD':
                     for item in player.inventory:
                        if isinstance(item, Food):
                            print(item.name + ': Restores ' + str(item.hp) + ' health')
@@ -348,8 +354,7 @@ def execute(command):
     command = command.split(" ")
     if command[0] == '?' or command[0].upper() == 'HELP':
         print('Possible commands:')
-        for command in possibleCommands:
-            print(command)
+        clHelp.prtMsg()
     elif command[0].upper() == 'GOTO':
         if command[1].upper() == 'INTERACT':
             personInteraction()
@@ -374,7 +379,7 @@ def execute(command):
             print('Cancelled.')
 
     else:
-        print('Command not found. Type "help" for help.')
+        print('Command not found. Type "help" or "?" for help.')
 
 def devMode():
     global entities, previousCommand
@@ -531,12 +536,6 @@ Do you want to:
 
 # Get current file path
 fileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
-possibleCommands = ['help -- show this message',
-                    'goto -- goto <location>, ex. goto inventory',
-                    'quit--quit game',
-                    'reset--reset progress']
-
 
 if args.reset:
     newGame()

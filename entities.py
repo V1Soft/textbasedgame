@@ -35,7 +35,7 @@ specialWeapons = [grenade]
 peopleHelpers = [oldLady]
 
 foodMerchant = Vendor('food merchant', '\nHello! Welcome to my food store.')
-foodMerchant.goods = {bread: bread, potato: potato} # dict so index can be accessed by name
+foodMerchant.goods = {bread: bread, potato: potato}  # dict so index can be accessed by name
 weaponTrader = Vendor('weapon trader', '\nI sell things to help you more efficiently kill people.')
 weaponTrader.goods = {gun: gun, knife: knife, grenade: grenade}
 vendors = [foodMerchant, weaponTrader]
@@ -51,9 +51,25 @@ args = argparser.parse_args()
 locationMain = Location('Main', 'Where it all begins.', None)
 locationInventory = Location('Inventory', 'Your Inventory.', None)
 locationMarket = Location('Market', 'The Market.', None)
-#locationMarketFood = Location('Food Store', 'Hello! Welcome to my food store.', foodMerchant)
-#locationMarketFood = Location('Weapons Shop', 'I sell things to help you more efficiently kill people.', weaponsTrader)
+# locationMarketFood = Location('Food Store', 'Hello! Welcome to my food store.', foodMerchant)
+# locationMarketFood = Location('Weapons Shop', 'I sell things to help you more efficiently kill people.', weaponsTrader)
 locationInteract = Location('Interact', 'Interact with your Surroundings.', None)
+
+# Help messages
+
+clHelp = HelpMsg(['help--show this message',
+                  'goto--goto <location>, ex. goto inventory',
+                  'quit--quit game',
+                  'reset--reset progress'])
+inventoryHelp = HelpMsg(['help--show this message',
+                         'list <food/money/weapons/health>--list wanted information',
+                         'eat <food>--eat food and restore health',
+                         'exit--leave inventory'])
+storeHelp = HelpMsg(['help--show this message',
+                     '<item>--buy item',
+                     'money--print available money',
+                     'info <item>--give info on item',
+                     'exit--leave the store'])
 
 if __name__ == '__main__':
     print('Go away.')
