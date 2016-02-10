@@ -369,7 +369,7 @@ def exec(command):
         print('Command not found. Type "help" for help.')
 
 def devMode():
-    global entities
+    global entities, previousCommand
     player.language = Language('en')
     print('Type "help" for help.')
     while True:
