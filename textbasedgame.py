@@ -226,7 +226,7 @@ def market():
 ''')
     print('\nVendors:')
     for vendor in vendors:
-        print('\t%s' %(vendor.name))
+        print('\t%s' % vendor.name)
         print('\nPlease type the vendor you want to visit.')
         isVendor = False
         while not isVendor:
@@ -245,13 +245,15 @@ def market():
         goToVendor(vendorToVisit)
 
 def goToVendor(vendor):
+    global previousVendor
+    previousVendor = vendor
     player.location.name = locationMarket.name
     player.location.description = locationMarket.description
     player.location.entity = vendor
-    print('%s\nItems for sale:' %(vendor.message))
+    print('%s\nItems for sale:' % vendor.message)
     vendor.say(vendor.goods)
     while True:
-        command = input('\nMarket > %s : ' %(vendor.name))
+        command = input('\nMarket > %s : ' % vendor.name)
         commandRun = False
         thingToBuy = None
         for good in vendor.goods:
@@ -416,18 +418,23 @@ def commandLine():
             quitGame()
 
 def quitGame():
-        print('Saving progress...')
-        saveInfo(usr, 'previousCommand', player.previousCommand)
-        saveInfo(usr, 'entities', entities)
-        saveInfo(usr, 'player.' + player.name, player)
-#        saveInfo('firstTime', False)
-        print('Progress saved.')
-        sys.exit()
+    print('Saving progress...')
+    saveInfo(usr, 'previousCommand', player.previousCommand)
+    saveInfo(usr, 'entities', entities)
+    saveInfo(usr, 'player.' + player.name, player)
+#   saveInfo('firstTime', False)
+    try:
+        saveInfo(usr, 'previousVendor', previousVendor)
+    except:
+        saveInfo(usr, 'previousVendor', None)
+    print('Progress saved.')
+    sys.exit()
 
 def newGame():
-    global player, entities
+    global player, entities, usr
     entities = []
-    player = Player(input('What is your desired username? : '), 100, 100, float(5))
+    usr = input('What is your desired username? : ')
+    player = Player(usr, 100, 100, float(5))
     player.inventory = [stick, potato]
     player.location = locationMain
     print('What is your desired language?')
@@ -445,8 +452,9 @@ def newGame():
 #    saveInfo('firstTime', False)
     commandLine()
 
+
 def loadGame():
-    global player, entities, usr, previousCommand
+    global player, entities, usr, previousCommand, previousVendor
     try:
         print('List of users:')
         users = []
@@ -461,12 +469,13 @@ def loadGame():
         entities = loadInfo(usr, 'entities')
         player = loadInfo(usr, 'player.' + usr)
         previousCommand = loadInfo(usr, 'previousCommand')
+        previousVendor = loadInfo(usr, 'previousVendor')
         print('Game save loaded.')
         try:
             if player.location.name == 'Inventory':
                 inventory()
             elif player.location.name == 'Market':
-                goToVendor(player.location.entity)
+                goToVendor(previousVendor)#player.location.entity)
             elif player.location.name == 'Interact':
                 #fight(player.location.entity, getBestInventoryWeapon()[1])
                 inventory()
@@ -476,6 +485,7 @@ def loadGame():
     except KeyError:
         print('Savefile does not exist or is broken. Creating new savefile...')
         newGame()
+
 
 def play():
     try:
