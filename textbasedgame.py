@@ -15,7 +15,7 @@ from languages import *
 
 def confirm(prompt='', default=True):
     if default:
-        answer = input(prompt + ' (Y/n)')
+        answer = input(prompt + ' (Y/n) ')
         if answer.lower() == 'y' or answer.lower() == 'yes' or answer == '':
             return True
         elif answer.lower() == 'n' or answer.lower() == 'no':
@@ -95,12 +95,12 @@ def fight(person, weapon):
         player.health += weapon.hp
         print("The " + str(player.location.entity.name) + " ran away")
         commandLine()
-    for choice in ['fight', 'act', 'item', 'retreat', 'auto']:
+    for choice in ['auto', 'act', 'item', 'retreat']:
         print(choice)
     while player.health > 1 and player.location.entity.health > 1:
         command = input('Interact : ').split(" ")
-        if command[0] == "1" or command[0].upper() == "FIGHT":
-            continue
+        if command[0] == "1" or command[0].upper() == "AUTO":
+            break
         elif command[0] == "2" or command[0].upper() == "ACT":
             print("You " +  str(player.location.entity.acts) + " the " + str(player.location.entity.name) + ".")
             if player.location.entity.acts == "pet":
@@ -154,8 +154,6 @@ def fight(person, weapon):
             print("You ran away.")
             player.location.entity = None
             return
-        elif command[0] == '5' or command[0].upper() == "AUTO":
-            break
     while True:
         player.hit(weapon.power + player.location.entity.power) # Remove health from player
         player.location.entity.health -= getBestInventoryWeapon() + player.power # Remove health of opponent
