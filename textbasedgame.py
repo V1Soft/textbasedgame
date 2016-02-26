@@ -470,9 +470,9 @@ def loadGame():
         print('List of users:')
         users = []
         for file in os.listdir(fileDir + '/saves'):
-            if file.endswith('.save') and file != 'dev.save':
-                print(file[:-5])
-                users.append(file[:-5])
+            if (file.endswith('.save') or file.endswith('.save.dat')) and (file != 'dev.save' or file != 'dev.save'): 
+                print(file[:-5]) if file.endswith('.save') else print(file[:-9])
+                users.append(file[:-5]) if file.endswith('.save') else users.append(file[:-9])
         usr = input('What is your username? : ')
         if usr not in users and usr != 'dev':
             print('User not found. Creating new user...')
