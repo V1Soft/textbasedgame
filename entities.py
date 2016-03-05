@@ -15,6 +15,9 @@ gandalf = Helper('Gandalf')
 angel = Helper('angel')
 helpers = [oldLady, gandalf, angel]
 
+# Set up memory characters
+you = Enemy('You', player.health, player.power, None)
+
 stick = Weapon('stick', 5, 'sword', 0, 'Whack to your heart\'s content.')
 gun = Weapon('gun', 50, 'projectile', 100, '3expensive5me')
 cane = Weapon('cane', 6, 'sword', 5, 'The hidden power of old people everywhere')

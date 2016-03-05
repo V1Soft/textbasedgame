@@ -95,11 +95,19 @@ def fight(person, weapon):
     if isinstance(weapon, Food):  # Code no longer relevant
         print("...So you took the " + str(weapon.name) + " and ate it")
         player.health += weapon.hp
+        if person == you:
+            player.location.entity.health += weapon.hp
         print("The " + str(player.location.entity.name) + " ran away")
         commandLine()
     for choice in ['auto', 'act', 'item', 'retreat']:
         print(choice)
     while player.health > 1 and player.location.entity.health > 1:
+        print('\nYour Health [ ', end='')
+        i = 0
+        while i != player.health / 10:
+            print('#', end='')
+            i += 1
+        print(' ]\n\n', end='')
         command = input('Interact : ').split(" ")
         if command[0] == "1" or command[0].upper() == "AUTO":
             break
@@ -121,6 +129,8 @@ def fight(person, weapon):
                         if isinstance(item, Food):
                             player.inventory.remove(item)
                             player.health += item.hp
+                            if person == you:
+                                player.location.entity.health += item.hp
                             print('%s points added to health!' % item.hp)
                             break
                         else:
@@ -200,6 +210,68 @@ def fight(person, weapon):
             print('Opponent dropped %s coins' % coinsToAdd)
             player.location.entity = None
             break
+
+def memory():
+    matrix = True
+    while True:
+        try:
+            rand = random.randint(0,1)
+            print(rand, end='')
+        except KeyboardInterrupt:
+            try:
+                print('\nRegaining Train of Thought...\n')
+                time.sleep(10)
+            except KeyboardInterrupt:
+                try:
+                    print('\nEntering Subconcience...\n')
+                    time.sleep(10)
+                except KeyboardInterrupt:
+                    print('\nProgress Lost.')
+                    sys.exit(0)
+                try:
+                    while True:
+                        command = input('ZZZ : ').split(' ')
+                        if command[0].upper() == 'WAKE':
+                            print('It costs 10 coins to wake.')
+                            player.money -= 10
+                            return
+                        elif command[0].upper() == 'LOADMOD':
+                            os.system(command[1])
+                        elif command[0].upper() == 'VIEWMATRIX':
+                            os.system('cat textbasedgame.py')
+                            print('You are not here...')
+                            time.sleep(5)
+                            quitGame()
+                            while True:
+                                command = input('ZZZ/Matrix : ').split(' ')
+                                if command[0].upper() == 'GOTO':
+                                    print('Whoops')
+                                    #print(str(open('textbasedgame.py', newline=None)).split('\n')[int(command[1])])
+                        elif command[0].upper() == 'GOTO':
+                            if command[1].upper() == 'SLEEP':
+                                print('Before you may sleep...')
+                                time.sleep(2.5)
+                                print('You must fight me...')
+                                time.sleep(2.5)
+                                print('I am you...')
+                                time.sleep(2.5)
+                                print('But you are not me.')
+                                time.sleep(10)
+                                fight(you, getBestInventoryWeapon()[1])
+                except KeyboardInterrupt:
+                    try:
+                        print('\nRegaining Train of Thought...\n')
+                        time.sleep(10)
+                    except KeyboardInterrupt:
+                        print('\nSuffered Memory Loss.\n')
+                        rand = random.randint(0,2)
+                        if rand == 0:
+                            player.inventory = []
+                        elif rand == 1:
+                            player.money = 0
+                        else:
+                            player.power = float(0)
+                        quitGame()
 
 
 def saveInfo(username, name, info):
@@ -379,6 +451,8 @@ def execute(command):
         elif command[1].upper() == 'INVENTORY':
             print('Entering Inventory...')
             inventory()
+        elif command[1].upper() == 'MEMORY':
+            memory()
         else:
             print('Location not found.')
     elif command[0].upper() == 'QUIT':
