@@ -10,23 +10,27 @@ import languages
 import entities
 
 def commandLine():
-    command = input(': ').split(' ')
-    if command[0] == '.':
-        if entities.player.previousCommand is not None:
-            utils.execute(entities.player.previousCommand)
-        else:
-            print('No previous command set')
-    elif command[0].upper() == 'WHO':
-        print('You are: ' + usr)
-    elif command[0].upper() == 'QUIT':
-        if utils.confirm('Are you sure you want to quit?'):
+    while True:
+        try:
+            command = input(': ').split(' ')
+            if command[0] == '.':
+                if entities.player.previousCommand is not None:
+                    utils.execute(entities.player.previousCommand)
+                else:
+                    print('No previous command set')
+            elif command[0].upper() == 'WHO':
+                print('You are: ' + usr)
+            elif command[0].upper() == 'QUIT':
+                if utils.confirm('Are you sure you want to quit?'):
+                    quitGame()
+            elif command[0].upper() == 'RESET':
+                if utils.confirm('Are you sure you want to reset?'):
+                    newGame()
+            else:
+                utils.execute(command)
+                entities.player.previousCommand = command
+        except KeyboardInterrupt:
             quitGame()
-    elif command[0].upper() == 'RESET':
-        if utils.confirm('Are you sure you want to reset?'):
-            newGame()
-    else:
-        utils.execute(command)
-        entities.player.previousCommand = command 
 
 def quitGame():
     print('\nSaving progress...')
@@ -51,6 +55,7 @@ def newGame():
     entities.player = obj.Player(usr, 100, 100, float(5))
     entities.player.inventory = [entities.getWeapon('stick'), entities.getFood('potato')]
     entities.player.location = entities.getLocation('Main')
+    print('New Game set up. Welcome.')
     commandLine()
 
 def loadGame():
