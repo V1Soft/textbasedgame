@@ -10,6 +10,7 @@ import languages
 import entities
 
 def commandLine():
+    command = input(': ').split(' ')
     if command[0] == '.':
         if entities.player.previousCommand is not None:
             utils.execute(entities.player.previousCommand)
