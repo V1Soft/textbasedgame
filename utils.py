@@ -230,9 +230,8 @@ def loadInfo(username, wantedInfo):
     return info
 
 def goToVendor(vendor):
-    global previousVendor, previousCommand
+    global previousVendor
     previousVendor = vendor
-    previousCommand = None
     entities.player.location = entities.getLocation('Market')
     entities.player.location.entity = vendor
     print('%s\nItems for sale:' % vendor.message)
@@ -241,10 +240,6 @@ def goToVendor(vendor):
         command = input('Market > %s : ' % vendor.name).split(' ')
         thingToBuy = None
         buying = False
-        if command[0] != '.':
-            previousCommand = command
-        else:
-            command = previousCommand
         for good in vendor.goods:
             if good.name == command[0]:
                 thingToBuy = good
