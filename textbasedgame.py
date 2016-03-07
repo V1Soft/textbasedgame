@@ -14,12 +14,7 @@ def commandLine():
     while True:
         try:
             command = input(': ').split(' ')
-            if command[0] == '.':
-                if entities.player.previousCommand is not None:
-                    utils.execute(entities.player.previousCommand)
-                else:
-                    print('No previous command set')
-            elif command[0].upper() == 'WHO':
+            if command[0].upper() == 'WHO':
                 print('You are: ' + usr)
             elif command[0].upper() == 'QUIT':
                 if utils.confirm('Are you sure you want to quit?'):
