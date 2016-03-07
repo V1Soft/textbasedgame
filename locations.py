@@ -139,7 +139,7 @@ def market():
 +-----------------------------------------------------+''')
     isVendor = False
     while not isVendor:
-        command = choose('\nPlease type the vendor you want to visit.', entities.vendors)
+        command = utils.choose('\nPlease type the vendor you want to visit.', entities.vendors)
         for vendor in entities.vendors:
             if vendor.name == command:
                 vendorToVisit = vendor
