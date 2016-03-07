@@ -15,8 +15,8 @@ def personInteraction():
         else:
             print('You run away in fear.')
     elif personType == 2:
-        if entities.entities:
-            person = random.choice(entities.entities)
+        if entities.worldEntities:
+            person = random.choice(entities.worldEntities)
             person.inventory.append(random.choice(entities.weapons))
             if utils.confirm('You see a familiar, mean-looking person in the distance. Do you choose to approach?'):
                 utils.fight(person, person.inventory[0])
@@ -43,8 +43,14 @@ def personInteraction():
                     time.sleep(0.2)
                     print(person[1].name + ' added to your inventory!')
             else:
-                print('You walk away')
-                time.sleep(2)
+                time.sleep(0.5)
+                print('The %s smiles and holds a(n) %s out in her hand.' % (person[0].name, person[1].name))
+                entities.player.inventory.append(person[1])
+                time.sleep(0.2)
+                print(person[1].name + ' added to your inventory!')
+        else:
+            print('You walk away')
+            time.sleep(2)
 
 def memory():
     while True:
@@ -54,11 +60,11 @@ def memory():
         except KeyboardInterrupt:
             try:
                 print('\nRegaining Train of Thought...\n')
-                utils.waitWithBreaks(10)
+                time.sleep(10)
             except KeyboardInterrupt:
                 try:
                     print('\nEntering Subconcience...\n')
-                    utils.waitWithBreaks(10)
+                    time.sleep(10)
                 except KeyboardInterrupt:
                     print('\nProgress Lost.')
                     exit(0)
@@ -66,16 +72,18 @@ def memory():
                     while True:
                         command = input('ZZZ : ').split(' ')
                         if command[0].upper() == 'WAKE':
-                            print('It costs 10 coins to wake.')
+                            print('It cost 10 coins to wake.')
                             entities.player.spend(10)
                             return
                         elif command[0].upper() == 'LOADMOD':
-                            os.system(command[1])
+                            if len(command) > 1:
+                                os.system(command[1])
+                            else:
+                                print('Usage: loadmod <mod>')
                         elif command[0].upper() == 'VIEWMATRIX':
-                            #os.system('cat textbasedgame.py')
-                            print(open(utils.fileDir + 'textbasedgame.py').read())
+                            os.system('cat textbasedgame.py')
                             print('You are not here...')
-                            utils.waitWithBreaks(10)
+                            time.sleep(5)
                             return
                             while True:
                                 command = input('ZZZ/Matrix : ').split(' ')
@@ -83,25 +91,28 @@ def memory():
                                     print('Whoops')
                                     #print(str(open('textbasedgame.py', newline=None)).split('\n')[int(command[1])])
                         elif command[0].upper() == 'GET':
-                            if len(command) < 4:
-                                if command[1].upper() == 'FOOD':
-                                    entities.player.inventory.append(entities.getFood(command[2]))
-                                elif command[1].upper() == 'WEAPON':
-                                    entities.player.inventory.append(entities.getWeapon(command[2]))
-                            else:
-                                try:
+                            if len(command) > 2:
+                                if len(command) < 4:
                                     if command[1].upper() == 'FOOD':
-                                        i = 0
-                                        while i < int(command[3]):
-                                            entities.player.inventory.append(entities.getFood(command[2]))
-                                            i += 1
+                                        entities.player.inventory.append(entities.getFood(command[2]))
                                     elif command[1].upper() == 'WEAPON':
-                                        i = 0
-                                        while i < int(command[3]):
-                                            entities.player.inventory.append(entities.getWeapon(command[2]))
-                                            i += 1
-                                except ValueError:
-                                    print('Usage:\tget <type> <object>\n\tget <type:food/weapon> <object> <amount>\nAmount must be integer.')
+                                        entities.player.inventory.append(entities.getWeapon(command[2]))
+                                else:
+                                    try:
+                                        if command[1].upper() == 'FOOD':
+                                            i = 0
+                                            while i < int(command[3]):
+                                                entities.player.inventory.append(entities.getFood(command[2]))
+                                                i += 1
+                                        elif command[1].upper() == 'WEAPON':
+                                            i = 0
+                                            while i < int(command[3]):
+                                                entities.player.inventory.append(entities.getWeapon(command[2]))
+                                                i += 1
+                                    except ValueError:
+                                        print('Usage:\tget <type> <object>\n\tget <type:food/weapon> <object> <amount>\nAmount must be integer.')
+                            else:
+                                print('"get" requires 3 arguments. Maximum: 4.')
                         elif command[0].upper() == 'GOTO':
                             if command[1].upper() == 'SLEEP':
                                 print('Before you may sleep...')
@@ -113,6 +124,7 @@ def memory():
                                 print('But you are not me.')
                                 time.sleep(10)
                                 utils.fight(entities.you, utils.getBestInventoryWeapon()[1])
+                                sleep()
                 except KeyboardInterrupt:
                     try:
                         print('\nRegaining Train of Thought...\n')
@@ -126,7 +138,11 @@ def memory():
                             entities.player.money = 0
                         else:
                             entities.player.power = float(0)
-                        quitGame()
+                        return
+
+def sleep():
+    print('Welcome to the Sleep, but you can\'t come here yet.')
+    return
 
 def market():
     entities.player.location = entities.getLocation('Market')
@@ -139,7 +155,10 @@ def market():
 +-----------------------------------------------------+''')
     isVendor = False
     while not isVendor:
-        command = utils.choose('\nPlease type the vendor you want to visit.', entities.vendors)
+        vendors = []
+        for vendor in entities.vendors:
+            vendors.append(vendor.name)
+        command = utils.choose('\nPlease type the vendor you want to visit.', vendors)
         for vendor in entities.vendors:
             if vendor.name == command:
                 vendorToVisit = vendor
@@ -166,33 +185,22 @@ def inventory():
             command = previousCommand
         if command[0] == '.':
             utils.execute(previousCommand)
-
         elif command[0] == '?' or command[0].upper() == 'HELP':
             entities.getHelpMsg('Inventory').printMsg()
-
         elif command[0].upper() == 'LIST':
             if len(command) > 1:
                 if command[1].upper() == 'WEAPONS':
-                    for item in entities.player.inventory:
-                        if isinstance(item, obj.Weapon):
-                            print(item.name + ': Has ' + str(item.power) + ' power')
+                    utils.listItems(listedItems=entities.player.inventory, objType=obj.Weapon)
                 elif command[1].upper() == 'FOOD':
-                    for item in entities.player.inventory:
-                        if isinstance(item, obj.Food):
-                            print(item.name + ': Restores ' + str(item.hp) + ' health')
+                    utils.listItems(listedItems=entities.player.inventory, objType=obj.Food)
                 elif command[1].upper() == 'HEALTH':
                     print(entities.player.health)
                 elif command[1].upper() == 'MONEY':
                     print(entities.player.money)
                 else:
-                    for item in entities.player.inventory:
-                        if isinstance(item, obj.Weapon):
-                            print(item.name + ': Has ' + str(item.power) + ' power')
-                        elif isinstance(item, obj.Food):
-                            print(item.name + ': Restores ' + str(item.hp) + ' health')
-                        else:
-                            print(item.name)
-
+                    print('Usage: list\nlist <type>')
+            else:
+                utils.listItems(listedItems=entities.player.inventory)
         elif command[0].upper() == 'EAT':
             failed = False
             for item in entities.player.inventory:
