@@ -10,8 +10,8 @@ import languages
 import entities
 
 def commandLine():
-    while True:
-        try:
+    try:
+        while True:
             command = input(': ').split(' ')
             if command[0] == '.':
                 if entities.player.previousCommand is not None:
@@ -29,8 +29,8 @@ def commandLine():
             else:
                 utils.execute(command)
                 entities.player.previousCommand = command
-        except KeyboardInterrupt:
-            quitGame()
+    except KeyboardInterrupt:
+        quitGame()
 
 def quitGame():
     print('\nSaving progress...')
@@ -55,7 +55,7 @@ def newGame():
     entities.player = obj.Player(usr, 100, 100, float(5))
     entities.player.inventory = [entities.getWeapon('stick'), entities.getFood('potato')]
     entities.player.location = entities.getLocation('Main')
-    print('New Game set up. Welcome.')
+    print('New game set up. Welcome.')
     commandLine()
 
 def loadGame():

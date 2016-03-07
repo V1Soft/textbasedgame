@@ -1,6 +1,7 @@
 import inspect
 import os
-import curses
+# import curses
+# What is this?
 import shelve
 import random
 import time
@@ -33,7 +34,7 @@ def choose(prompt='', choices=[], prefix='', default=True):
     if default:
         for choice in choices:
             if i == len(choices) - 1:
-                print(str(i) + '. ' + choice + ' or')
+                print(str(i) + '. ' + choice)
             else:
                 print(str(i) + '. ' + choice)
             i += 1
@@ -283,6 +284,15 @@ def execute(command):
             print('Location not found.')
     else:
         print('Command not found. Type "help" or "?" for help.')
+        
+
+def waitWithBreaks(seconds):
+    '''
+    This is useful so KeyboardInterrupt works during sleeping
+    '''
+    for i in range(seconds / 2):
+        time.sleep(0.5)
+    
 
 # Get current file path
 fileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))

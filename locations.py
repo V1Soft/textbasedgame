@@ -54,11 +54,11 @@ def memory():
         except KeyboardInterrupt:
             try:
                 print('\nRegaining Train of Thought...\n')
-                time.sleep(10)
+                utils.waitWithBreaks(10)
             except KeyboardInterrupt:
                 try:
                     print('\nEntering Subconcience...\n')
-                    time.sleep(10)
+                    utils.waitWithBreaks(10)
                 except KeyboardInterrupt:
                     print('\nProgress Lost.')
                     exit(0)
@@ -72,9 +72,10 @@ def memory():
                         elif command[0].upper() == 'LOADMOD':
                             os.system(command[1])
                         elif command[0].upper() == 'VIEWMATRIX':
-                            os.system('cat textbasedgame.py')
+                            #os.system('cat textbasedgame.py')
+                            print(open(utils.fileDir + 'textbasedgame.py').read())
                             print('You are not here...')
-                            time.sleep(5)
+                            utils.waitWithBreaks(10)
                             return
                             while True:
                                 command = input('ZZZ/Matrix : ').split(' ')
