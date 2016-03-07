@@ -1,7 +1,6 @@
 import inspect
 import os
-# import curses
-# What is this?
+import curses
 import shelve
 import random
 import time
@@ -34,7 +33,7 @@ def choose(prompt='', choices=[], prefix='', default=True):
     if default:
         for choice in choices:
             if i == len(choices) - 1:
-                print(str(i) + '. ' + choice)
+                print(str(i) + '. ' + choice + ' or')
             else:
                 print(str(i) + '. ' + choice)
             i += 1
@@ -49,7 +48,7 @@ def choose(prompt='', choices=[], prefix='', default=True):
                 else:
                     print('Invalid Choice.')                    
             except ValueError:
-                if descision in choices:
+                if descision.split(' ')[0] in choices:
                     return descision
                 else:
                     print('Invalid Choice.')
@@ -68,6 +67,26 @@ def choose(prompt='', choices=[], prefix='', default=True):
                 return choices[int(descision)-1][1].upper()
             except ValueError:
                 return descision.upper()
+
+def listItems(prompt='', listedItems=[], objType=None):
+    i = 0
+    if objType is not None:
+        for listedItem in listedItems:
+            if isinstance(listedItem, objType):
+                if isinstance(listedItem, obj.Weapon):
+                    print(listedItem.name + ': Has ' + str(listedItem.power) + ' power')
+                elif isinstance(listedItem, obj.Food):
+                    print(listedItem.name + ': Restores ' + str(listedItem.hp) + ' health')
+                else:
+                    print(objType.name)
+    else:
+        for listedItem in listedItems:
+            if isinstance(listedItem, obj.Weapon):
+                print(listedItem.name + ': Has ' + str(listedItem.power) + ' power')
+            elif isinstance(listedItem, obj.Food):
+                print(listedItem.name + ': Restores ' + str(listedItem.hp) + ' health')
+            else:
+                print(str(i) + '. ' + listedItem)
 
 def getBestInventoryWeapon():
     bestItemPower = 0
@@ -92,67 +111,66 @@ def fight(person, weapon):
             entities.player.location.entity.health += weapon.hp
         print("The " + str(entities.player.location.entity.name) + " ran away")
         commandLine()
-    for choice in ['auto', 'act', 'item', 'retreat']:
-        print(choice)
     while entities.player.health > 1 and entities.player.location.entity.health > 1:
         print('\nYour Health [ ', end='')
         i = 0
-        while i != entities.player.health / 10:
+        while i != entities.player.health:
             print('#', end='')
             i += 1
         print(' ]\n\n', end='')
-        command = input('Interact : ').split(' ')
-        if command[0] == "1" or command[0].upper() == "AUTO":
+        command = choose('Interact Commands:', ['auto', 'act', 'item', 'retreat'], 'Interact').split(' ')
+        if command[0].upper() == 'AUTO':
             break
-        elif command[0] == "2" or command[0].upper() == "ACT":
+        elif command[0].upper() == 'ACT':
             print("You " + str(entities.player.location.entity.acts) + " the " + str(entities.player.location.entity.name) + ".")
             if entities.player.location.entity.acts == "pet":
                 print("The " + str(entities.player.location.entity.name) + " runs away")
-                textbasedgame.commandLine()
+                return
             else:
                 print("...But it didn't work")
                 break
-        elif command[0] == '3' or command[0].upper() == 'ITEM':
-            for item in entities.player.inventory:
-                if item in weapons or item in entities.specialWeapons:
-                    print(item.name)
-            if command[1] == 'eat':
-                for item in entities.player.inventory:
-                    if item.name == command[2]:
-                        if isinstance(item, obj.Food):
+        elif command[0].upper() == 'ITEM':
+            if len(command) == 3:
+                listItems('Weapons:', entities.player.inventory, obj.Weapon)
+                if command[1].upper() == 'EAT':
+                    for item in entities.player.inventory:
+                        if item.name == command[2]:
+                            if isinstance(item, obj.Food):
+                                entities.player.inventory.remove(item)
+                                entities.player.health += item.hp
+                                if entities.player.location.entity == entities.you:
+                                    entities.player.location.entity.health += item.hp
+                                print('%s points added to health!' % item.hp)
+                                break
+                            else:
+                                print("You cannot eat that")
+                                break
+                elif command[1].upper() == 'USE':
+                    for item in entities.player.inventory:
+                        if item.name == command[2]:
+                            if item.itemtype == 'bomb':
+                                print("The " + item.name + " exploded")
+                                print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
+                                entities.player.location.entity.health -= item.power
+                                entities.player.inventory.remove(item)
+                                break
+                            else:
+                                print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
+                                entities.player.location.entity.health -= item.power
+                                # hero.inventory.remove(item)
+                                break
+                elif command[1] == 'throw':
+                    for item in entities.player.inventory:
+                        if item.name == command[2]:
                             entities.player.inventory.remove(item)
-                            entities.player.health += item.hp
-                            if entities.player.location.entity == entities.you:
-                                entities.player.location.entity.health += item.hp
-                            print('%s points added to health!' % item.hp)
+                            print("You threw away the %s" % item.name)
                             break
-                        else:
-                            print("You cannot eat that")
-                            break
-            elif command[1] == 'use':
-                for item in entities.player.inventory:
-                    if item.name == command[2]:
-                        if item.itemtype == 'bomb':
-                            print("The " + item.name + " exploded")
-                            print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
-                            entities.player.location.entity.health -= item.power
-                            entities.player.inventory.remove(item)
-                            break
-                        else:
-                            print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
-                            entities.player.location.entity.health -= item.power
-                            # hero.inventory.remove(item)
-                            break
-            elif command[1] == 'throw':
-                for item in entities.player.inventory:
-                    if item.name == command[2]:
-                        entities.player.inventory.remove(item)
-                        print("You threw away the %s" % item.name)
-                        break
-                break
+                    break
+                else:
+                    print("Item command not found.")
             else:
-                print("Item command not found.")
-        elif command[0] == "4" or command[0].upper() == "RETREAT":
+                print('"item" requires 3 arguments. Maximum 4.')
+        elif command[0].upper() == 'RETREAT':
             print("You ran away.")
             entities.player.location.entity = None
             return
@@ -284,15 +302,6 @@ def execute(command):
             print('Location not found.')
     else:
         print('Command not found. Type "help" or "?" for help.')
-        
-
-def waitWithBreaks(seconds):
-    '''
-    This is useful so KeyboardInterrupt works during sleeping
-    '''
-    for i in range(seconds / 2):
-        time.sleep(0.5)
-    
 
 # Get current file path
 fileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))

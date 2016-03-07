@@ -10,8 +10,8 @@ import languages
 import entities
 
 def commandLine():
-    try:
-        while True:
+    while True:
+        try:
             command = input(': ').split(' ')
             if command[0] == '.':
                 if entities.player.previousCommand is not None:
@@ -29,38 +29,37 @@ def commandLine():
             else:
                 utils.execute(command)
                 entities.player.previousCommand = command
-    except KeyboardInterrupt:
-        quitGame()
+        except KeyboardInterrupt:
+            quitGame()
 
 def quitGame():
     print('\nSaving progress...')
-    utils.saveInfo(usrFile, 'player.' + entities.player.name, entities.player)
-    utils.saveInfo(usrFile, 'worldEntities', entities.worldEntities)
+    utils.saveInfo(usr, 'player.' + entities.player.name, entities.player)
+    utils.saveInfo(usr, 'worldEntities', entities.worldEntities)
     try:
-        utils.saveInfo(usrFile, 'previousVendor', previousVendor)
+        utils.saveInfo(usr, 'previousVendor', previousVendor)
     except NameError:
-        utils.saveInfo(usrFile, 'previousVendor', None)
+        utils.saveInfo(usr, 'previousVendor', None)
     print('Progress saved.')
     exit(0)
 
 def newGame():
-    global usr, usrFile
+    global usr
     usr = ''
     entities.worldEntities = []
     while not usr:
         try:
             usr = input('What is your desired username? : ')
-            usrFile = usr + '.save'
         except KeyboardInterrupt:
             play()
     entities.player = obj.Player(usr, 100, 100, float(5))
     entities.player.inventory = [entities.getWeapon('stick'), entities.getFood('potato')]
     entities.player.location = entities.getLocation('Main')
-    print('New game set up. Welcome.')
+    print('New Game set up. Welcome.')
     commandLine()
 
 def loadGame():
-    global usr, usrFile, previousVendor
+    global usr, previousVendor
     try:
         users = []
         for file in os.listdir(utils.fileDir + '/saves'):
@@ -68,12 +67,11 @@ def loadGame():
                 users.append(file.split('.')[0])
         try:
             usr = utils.choose('List of users:', users, 'What is your username?')
-            usrFile = usr + '.save'
         except KeyboardInterrupt:
             play()
-        entities.worldEntities = utils.loadInfo(usrFile, 'worldEntities')
-        entities.player = utils.loadInfo(usrFile, 'player.' + usr)
-        previousVendor = utils.loadInfo(usrFile, 'previousVendor')
+        entities.worldEntities = utils.loadInfo(usr, 'worldEntities')
+        entities.player = utils.loadInfo(usr, 'player.' + usr)
+        previousVendor = utils.loadInfo(usr, 'previousVendor')
         print('Game save loaded.')
         try:
             if entities.player.location == entities.getLocation('Inventory'):
