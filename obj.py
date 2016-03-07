@@ -6,7 +6,6 @@ class Player(object):
         self.money = money
         self.power = power
         #self.language = None
-        self.previousCommand = None
         self.inventory = []
         self.location = None
 
