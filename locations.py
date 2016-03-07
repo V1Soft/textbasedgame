@@ -175,18 +175,10 @@ def market():
     utils.goToVendor(vendorToVisit)
 
 def inventory():
-    global previousCommand
     entities.player.location = entities.getLocation('Inventory')
-    previousCommand = None
     while True:
         command = input('Inventory : ').split(' ')
-        if command[0] != '.':
-            previousCommand = command
-        else:
-            command = previousCommand
-        if command[0] == '.':
-            utils.execute(previousCommand)
-        elif command[0] == '?' or command[0].upper() == 'HELP':
+        if command[0] == '?' or command[0].upper() == 'HELP':
             entities.getHelpMsg('Inventory').printMsg()
         elif command[0].upper() == 'LIST':
             if len(command) > 1:
