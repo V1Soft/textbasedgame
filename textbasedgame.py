@@ -2,6 +2,7 @@
 
 import inspect
 import os
+import readline
 
 import obj
 import utils
