@@ -1,9 +1,9 @@
 import inspect
 import os
-import curses
 import shelve
 import random
 import time
+import readline
 
 import obj
 import locations
