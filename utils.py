@@ -32,10 +32,7 @@ def choose(prompt='', choices=[], prefix='', default=True):
     print(prompt)
     if default:
         for choice in choices:
-            if i == len(choices) - 1:
-                print(str(i) + '. ' + choice + ' or')
-            else:
-                print(str(i) + '. ' + choice)
+            print(str(i) + '. ' + choice)
             i += 1
         while True:
             if prefix:
