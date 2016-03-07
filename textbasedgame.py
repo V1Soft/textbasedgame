@@ -34,22 +34,23 @@ def commandLine():
 
 def quitGame():
     print('\nSaving progress...')
-    utils.saveInfo(usr, 'player.' + entities.player.name, entities.player)
-    utils.saveInfo(usr, 'worldEntities', entities.worldEntities)
+    utils.saveInfo(usrFile, 'player.' + entities.player.name, entities.player)
+    utils.saveInfo(usrFile, 'worldEntities', entities.worldEntities)
     try:
-        utils.saveInfo(usr, 'previousVendor', previousVendor)
+        utils.saveInfo(usrFile, 'previousVendor', previousVendor)
     except NameError:
-        utils.saveInfo(usr, 'previousVendor', None)
+        utils.saveInfo(usrFile, 'previousVendor', None)
     print('Progress saved.')
     exit(0)
 
 def newGame():
-    global usr
+    global usr, usrFile
     usr = ''
     entities.worldEntities = []
     while not usr:
         try:
             usr = input('What is your desired username? : ')
+            usrFile = usr + '.save'
         except KeyboardInterrupt:
             play()
     entities.player = obj.Player(usr, 100, 100, float(5))
@@ -59,7 +60,7 @@ def newGame():
     commandLine()
 
 def loadGame():
-    global usr, previousVendor
+    global usr, usrFile, previousVendor
     try:
         users = []
         for file in os.listdir(utils.fileDir + '/saves'):
@@ -67,11 +68,12 @@ def loadGame():
                 users.append(file.split('.')[0])
         try:
             usr = utils.choose('List of users:', users, 'What is your username?')
+            usrFile = usr + '.save'
         except KeyboardInterrupt:
             play()
-        entities.worldEntities = utils.loadInfo(usr, 'worldEntities')
-        entities.player = utils.loadInfo(usr, 'player.' + usr)
-        previousVendor = utils.loadInfo(usr, 'previousVendor')
+        entities.worldEntities = utils.loadInfo(usrFile, 'worldEntities')
+        entities.player = utils.loadInfo(usrFile, 'player.' + usr)
+        previousVendor = utils.loadInfo(usrFile, 'previousVendor')
         print('Game save loaded.')
         try:
             if entities.player.location == entities.getLocation('Inventory'):
