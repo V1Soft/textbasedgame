@@ -60,9 +60,9 @@ def getVendor(name):
 
 # Arguments:
 argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
-argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
+argparser.add_argument('-n', '--new', help='New game', action='store_true')
 argparser.add_argument('-l', '--load-game', help='Load existing game', action='store_true')
-#argparser.add_argument('-s', '--use-language-espanol', help='Use Language other than English', action='store_true')
+
 args = argparser.parse_args()
 
 # Locations
@@ -81,6 +81,3 @@ def getHelpMsg(name):
             return helpMsg
     print('Help Message ' + name + ' not found.')
 
-# This file should not be executed
-if __name__ == '__main__':
-    print('Go away.')

@@ -43,7 +43,7 @@ def choose(prompt='', choices=[], prefix='', default=True):
                 if int(descision) <= len(choices):
                     return choices[int(descision)-1]
                 else:
-                    print('Invalid Choice.')                    
+                    print('Invalid choice.')                    
             except ValueError:
                 if descision.split(' ')[0] in choices:
                     return descision

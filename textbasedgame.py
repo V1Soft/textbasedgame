@@ -111,9 +111,14 @@ def play():
         except KeyboardInterrupt or EOFError:
             exit(0)
 
-if entities.args.reset:
+# Arguments
+argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
+argparser.add_argument('-n', '--new', help='New game', action='store_true')
+argparser.add_argument('-l', '--load-game', help='Load existing game', action='store_true')
+args = argparser.parse_args()
+if args.new:
     newGame()
-elif entities.args.load_game:
+elif args.load_game:
     loadGame()
 else:
     play()
