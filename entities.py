@@ -58,6 +58,12 @@ def getVendor(name):
             return vendor
     print('Vendor ' + name + ' not found.')
 
+# Arguments:
+argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
+argparser.add_argument('-r', '--reset', help='Reset game', action='store_true')
+argparser.add_argument('-l', '--load-game', help='Load existing game', action='store_true')
+#argparser.add_argument('-s', '--use-language-espanol', help='Use Language other than English', action='store_true')
+args = argparser.parse_args()
 
 # Locations
 locations = [obj.Location('Main', 'Where it all begins.', None), obj.Location('Inventory', 'Your Inventory.', None), obj.Location('Market', 'The Market.', None), obj.Location('Interact', 'Interact with your Surroundings.', None)]
@@ -75,3 +81,6 @@ def getHelpMsg(name):
             return helpMsg
     print('Help Message ' + name + ' not found.')
 
+# This file should not be executed
+if __name__ == '__main__':
+    print('Go away.')
