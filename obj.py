@@ -6,7 +6,6 @@ class Player(object):
         self.money = money
         self.power = power
         #self.language = None
-        self.previousCommand = None
         self.inventory = []
         self.location = None
 
@@ -100,8 +99,4 @@ class HelpMsg(object):
     # Print Message
     def printMsg(self):
         for command in self.commands:
-            print('\t' + command)
-
-# This file should not be executed
-if __name__ == '__main__':
-    print('Go away.')
+            print('  ' + command)
