@@ -3,7 +3,10 @@
 import argparse
 import inspect
 import os
-import readline
+try:
+    import readline 
+except ImportError: # readline doesn't work on iOS
+    readline = False
 
 import obj
 import utils
@@ -61,7 +64,7 @@ def loadGame(name=None):
     global usr, usrFile, previousVendor
     users = []
     for file in os.listdir(utils.fileDir + '/saves'):
-        if file.endswith('.save') or file.endswith('.save.dat') or file.endswith('.db'): 
+        if file.endswith('.save') or file.endswith('.db'): 
             users.append(file.split('.')[0])
     try:
         usr = utils.choose('List of users:', users, 'What is your username?')
