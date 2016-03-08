@@ -1,9 +1,9 @@
 import inspect
 import os
+import curses
 import shelve
 import random
 import time
-import readline
 
 import obj
 import locations
@@ -30,40 +30,29 @@ def confirm(prompt='', default=True):
 def choose(prompt='', choices=[], prefix='', default=True):
     i = 1
     print(prompt)
-    if default:
-        for choice in choices:
-            print(str(i) + '. ' + choice)
-            i += 1
-        while True:
-            if prefix:
-                descision = input(prefix + ' : ')
-            else:
-                descision = input(': ')
-            try:
-                if int(descision) <= len(choices):
-                    return choices[int(descision)-1]
-                else:
-                    print('Invalid choice.')                    
-            except ValueError:
-                if descision.split(' ')[0] in choices:
-                    return descision
+    for choice in choices:
+        print(str(i) + '. ' + choice)
+        i += 1
+    while True:
+        descision = parse(prefix)
+        try:
+            if len(descision) > 0:
+                if int(descision[0]) <= len(choices):
+                    return [choices[int(descision[0])-1]]
                 else:
                     print('Invalid Choice.')
-    else:
-        for choice in choices:
-            if i == len(choices) - 1:
-                print(str(i) + '. ' + choice[0] + ' (' + choice[1] + ') or')
+        except ValueError:
+            if descision[0] in choices:
+                return descision
             else:
-                print(str(i) + '. ' + choice[0] + ' (' + choice[1] + ')')
-            i += 1
-        if prefix:
-            descision = input(prefix + ' : ')
-        else:
-            descision = input(': ')
-            try:
-                return choices[int(descision)-1][1].upper()
-            except ValueError:
-                return descision.upper()
+                if not getSpellCheck(descision[0], choices) == 0.0:
+                    if confirm('Did you mean: ' + getSpellCheck(descision[0], choices), True):
+                        fixedCommand = [getSpellCheck(descision[0], choices)]
+                        for cmd in descision[1:]:
+                            fixedCommand.append(cmd)
+                        return fixedCommand
+                else:
+                    print('Invalid Choice.')
 
 def listItems(prompt='', listedItems=[], objType=None):
     i = 0
@@ -84,6 +73,28 @@ def listItems(prompt='', listedItems=[], objType=None):
                 print(listedItem.name + ': Restores ' + str(listedItem.hp) + ' health')
             else:
                 print(str(i) + '. ' + listedItem)
+
+def spellCheck(word, preset):
+    similar = 0
+    used = []
+    if word == preset:
+        return preset
+    else:
+        for char in preset or char.upper() in preset:
+            if char in word or char.upper() in word and char not in used:
+                similar += 1
+            used.append(char)
+        return (similar / len(preset)) * 100
+
+def getSpellCheck(word, presets):
+    greaterPreset = ''
+    for preset in presets:
+        if greaterPreset:
+            if spellCheck(word, preset) > spellCheck(greaterPreset, preset):
+                greaterPreset = preset
+        else:
+            greaterPreset = preset
+    return greaterPreset
 
 def getBestInventoryWeapon():
     bestItemPower = 0
@@ -115,61 +126,8 @@ def fight(person, weapon):
             print('#', end='')
             i += 1
         print(' ]\n\n', end='')
-        command = choose('Interact Commands:', ['auto', 'act', 'item', 'retreat'], 'Interact').split(' ')
-        if command[0].upper() == 'AUTO':
-            break
-        elif command[0].upper() == 'ACT':
-            print("You " + str(entities.player.location.entity.acts) + " the " + str(entities.player.location.entity.name) + ".")
-            if entities.player.location.entity.acts == "pet":
-                print("The " + str(entities.player.location.entity.name) + " runs away")
-                return
-            else:
-                print("...But it didn't work")
-                break
-        elif command[0].upper() == 'ITEM':
-            if len(command) == 3:
-                listItems('Weapons:', entities.player.inventory, obj.Weapon)
-                if command[1].upper() == 'EAT':
-                    for item in entities.player.inventory:
-                        if item.name == command[2]:
-                            if isinstance(item, obj.Food):
-                                entities.player.inventory.remove(item)
-                                entities.player.health += item.hp
-                                if entities.player.location.entity == entities.you:
-                                    entities.player.location.entity.health += item.hp
-                                print('%s points added to health!' % item.hp)
-                                break
-                            else:
-                                print("You cannot eat that")
-                                break
-                elif command[1].upper() == 'USE':
-                    for item in entities.player.inventory:
-                        if item.name == command[2]:
-                            if item.itemtype == 'bomb':
-                                print("The " + item.name + " exploded")
-                                print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
-                                entities.player.location.entity.health -= item.power
-                                entities.player.inventory.remove(item)
-                                break
-                            else:
-                                print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
-                                entities.player.location.entity.health -= item.power
-                                # hero.inventory.remove(item)
-                                break
-                elif command[1] == 'throw':
-                    for item in entities.player.inventory:
-                        if item.name == command[2]:
-                            entities.player.inventory.remove(item)
-                            print("You threw away the %s" % item.name)
-                            break
-                    break
-                else:
-                    print("Item command not found.")
-            else:
-                print('"item" requires 3 arguments. Maximum 4.')
-        elif command[0].upper() == 'RETREAT':
-            print("You ran away.")
-            entities.player.location.entity = None
+        interactExecute(parse('Interact'))
+        if entities.player.location.entity == None:
             return
     while True:
         entities.player.hit(weapon.power + entities.player.location.entity.power)  # Remove health from player
@@ -181,7 +139,6 @@ def fight(person, weapon):
             entities.worldEntities.append(entities.player.location.entity)
             entities.player.location.entity = None
             break
-
         elif entities.player.health < 1:
             # In case of loss
             time.sleep(0.2)
@@ -219,6 +176,75 @@ def fight(person, weapon):
             entities.player.location.entity = None
             break
 
+def interactExecute(command):
+        if command[0].upper() == 'HELP':
+            listItems(prompt='Interact Commands:', listedItems=['help', 'auto', 'act', 'item', 'retreat'])
+        elif command[0].upper() == 'AUTO':
+            return
+        elif command[0].upper() == 'ACT':
+            print("You " + str(entities.player.location.entity.acts) + " the " + str(entities.player.location.entity.name) + ".")
+            if entities.player.location.entity.acts == "pet":
+                print("The " + str(entities.player.location.entity.name) + " runs away")
+                return
+            else:
+                print("...But it didn't work")
+                return
+        elif command[0].upper() == 'ITEM':
+            if len(command) == 3:
+                listItems('Weapons:', entities.player.inventory, obj.Weapon)
+                if command[1].upper() == 'EAT':
+                    for item in entities.player.inventory:
+                        if item.name == command[2]:
+                            if isinstance(item, obj.Food):
+                                entities.player.inventory.remove(item)
+                                entities.player.health += item.hp
+                                if entities.player.location.entity == entities.you:
+                                    entities.player.location.entity.health += item.hp
+                                print('%s points added to health!' % item.hp)
+                                return
+                            else:
+                                print("You cannot eat that")
+                                return
+                elif command[1].upper() == 'USE':
+                    for item in entities.player.inventory:
+                        if item.name == command[2]:
+                            if item.itemtype == 'bomb':
+                                print("The " + item.name + " exploded")
+                                print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
+                                entities.player.location.entity.health -= item.power
+                                entities.player.inventory.remove(item)
+                                return
+                            else:
+                                print("The %s took %s damage!" % (entities.player.location.entity.name, item.power))
+                                entities.player.location.entity.health -= item.power
+                                # hero.inventory.remove(item)
+                                return
+                elif command[1].upper == 'THROW':
+                    for item in entities.player.inventory:
+                        if item.name == command[2]:
+                            entities.player.inventory.remove(item)
+                            print("You threw away the %s" % item.name)
+                            return
+                    return
+                else:
+                    print("Item command not found.")
+            else:
+                print('"item" requires 3 arguments. Maximum 4.')
+        elif command[0].upper() == 'RETREAT':
+            print('It cost 10 coins to retreat.')
+            entities.player.spend(10)
+            print("You ran away.")
+            entities.player.location.entity = None
+            return
+        else:
+            if not getSpellCheck(command[0], ['help', 'auto', 'act', 'item', 'retreat']) == 0.0:
+                if confirm('Did you mean: ' + getSpellCheck(command[0], ['help', 'auto', 'act', 'item', 'retreat']), True):
+                    fixedCommand = [getSpellCheck(command[0], ['help', 'auto', 'act', 'item', 'retreat'])]
+                    for cmd in command[1:]:
+                        fixedCommand.append(cmd)
+                    interactExecute(fixedCommand)
+            else:
+                print('Interact Command: ' + command[0] + ' not found.')
 def saveInfo(username, name, info):
     saveFile = shelve.open(fileDir + '/saves/%s.save' % username)
     saveFile[name] = info
@@ -230,8 +256,9 @@ def loadInfo(username, wantedInfo):
     return info
 
 def goToVendor(vendor):
-    global previousVendor
+    global previousVendor, previousCommand
     previousVendor = vendor
+    previousCommand = None
     entities.player.location = entities.getLocation('Market')
     entities.player.location.entity = vendor
     print('%s\nItems for sale:' % vendor.message)
@@ -240,6 +267,10 @@ def goToVendor(vendor):
         command = input('Market > %s : ' % vendor.name).split(' ')
         thingToBuy = None
         buying = False
+        if command[0] != '.':
+            previousCommand = command
+        else:
+            command = previousCommand
         for good in vendor.goods:
             if good.name == command[0]:
                 thingToBuy = good
@@ -250,50 +281,150 @@ def goToVendor(vendor):
             entities.player.spend(thingToBuy.cost)
             print('%s purchased for %s money.' % (thingToBuy.name, thingToBuy.cost))
         elif command[0].upper() == 'INFO':
-            thingToGetInfoOn = command[1]
-            itemInShop = False
-            for item in vendor.goods:
-                if item.name == thingToGetInfoOn:
-                    itemInShop = True
-                    break
-            if not itemInShop:
-                print('Item not found.')
-            else:
-                if isinstance(item, obj.Weapon):
-                    print('Power: %s' % item.power)
-                elif isinstance(item, obj.Food):
-                    print('Healing power: %s' % item.hp)
+            if len(command) == 2:
+                thingToGetInfoOn = command[1]
+                itemInShop = False
+                for item in vendor.goods:
+                    if item.name == thingToGetInfoOn:
+                        itemInShop = True
+                        break
+                if not itemInShop:
+                    print('Item not found.')
+                else:
+                    if isinstance(item, obj.Weapon):
+                        print('Power: %s' % item.power)
+                    elif isinstance(item, obj.Food):
+                        print('Healing power: %s' % item.hp)
                 print('Description: ' + item.description)
+            else:
+                print('Usage: info <item>')
         elif command[0].upper() == 'EXIT':
             print('You left the store.')
             entities.player.location.entity = entities.getLocation('Main')
             return
         elif command[0].upper() == 'HELP':
-            storeHelp.prtMsg()
+            entities.getHelpMsg('Market').printMsg()
         elif command[0].upper() == 'MONEY':
             print(entities.player.money + ' coins')
         else:
             print('Command not found.')
 
+def parse(prefix=''):
+    src = input(prefix + ' : ')
+    parsedScript = []
+    word = ''
+    prevChar = ''
+    inQuote = False
+    inString = False
+    for char in src:
+        if char == ' ':
+            if word:
+                parsedScript.append(word)
+                word = ''
+        elif char == '\'' and not prevChar == '\\':
+            inQuote = not inQuote
+        elif char == '\"' and not prevChar == '\\':
+            inString = not inString
+        else:
+            prevChar = char
+            word += char
+    if word:
+        parsedScript.append(word)
+    return parsedScript
+
+def quitGame():
+    print('\nSaving progress...')
+    saveInfo(entities.player.name, 'player.' + entities.player.name, entities.player)
+    saveInfo(entities.player.name, 'worldEntities', entities.worldEntities)
+    try:
+        saveInfo(entities.player.name, 'previousVendor', previousVendor)
+    except NameError:
+        saveInfo(entities.player.name, 'previousVendor', None)
+    print('Progress saved.')
+    exit(0)
+
+def newGame():
+    global usr
+    usr = ''
+    entities.worldEntities = []
+    while not usr:
+        try:
+            usr = input('What is your desired username? : ')
+        except KeyboardInterrupt:
+            return
+    entities.player = obj.Player(usr, 100, 100, float(5))
+    entities.player.inventory = [entities.getWeapon('stick'), entities.getFood('potato')]
+    entities.player.location = entities.getLocation('Main')
+    print('New Game set up. Welcome.')
+    locations.commandLine()
+
+def loadGame():
+    global usr, previousVendor
+    try:
+        users = []
+        for file in os.listdir(fileDir + '/saves'):
+            if (file.endswith('.save') or file.endswith('.save.dat')): 
+                users.append(file.split('.')[0])
+        try:
+            usr = choose('List of users:', users, 'What is your username?')
+        except KeyboardInterrupt:
+            return
+        entities.worldEntities = loadInfo(usr, 'worldEntities')
+        entities.player = loadInfo(usr, 'player.' + usr)
+        previousVendor = loadInfo(usr, 'previousVendor')
+        print('Game save loaded.')
+        try:
+            if entities.player.location == entities.getLocation('Inventory'):
+                locations.inventory()
+            elif entities.player.location == entities.getLocation('Market'):
+                utils.goToVendor(previousVendor)
+            elif entities.player.location == entities.getLocation('Interact'):
+                fight(entities.player.location.entity, entities.player.location.entity.weapon)
+                #inventory()
+        except KeyboardInterrupt or EOFError:
+            quitGame()
+        return
+    except KeyError:
+        print('Savefile does not exist or is broken. Creating new savefile...')
+        newGame()
+
 def execute(command):
     if command[0] == '?' or command[0].upper() == 'HELP':
         print('Possible commands:')
         entities.getHelpMsg('Main').printMsg()
+    elif command[0].upper() == 'WHO':
+        print('You are: ' + entities.player.name)
+    elif command[0].upper() == 'QUIT':
+        if confirm('Are you sure you want to quit?'):
+            quitGame()
+    elif command[0].upper() == 'RESET':
+        if confirm('Are you sure you want to reset?'):
+            newGame()
     elif command[0].upper() == 'GOTO':
-        if command[1].upper() == 'INTERACT':
-            locations.personInteraction()
-        elif command[1].upper() == 'MARKET':
-            print('Going to market...')
-            locations.market()
-        elif command[1].upper() == 'INVENTORY':
-            print('Entering Inventory...')
-            locations.inventory()
-        elif command[1].upper() == 'MEMORY':
-            locations.memory()
+        if len(command) == 2:
+            if command[1].upper() == 'INTERACT':
+                locations.personInteraction()
+            elif command[1].upper() == 'MARKET':
+                print('Going to market...')
+                locations.market()
+            elif command[1].upper() == 'INVENTORY':
+                print('Entering Inventory...')
+                locations.inventory()
+            elif command[1].upper() == 'MEMORY':
+                locations.memory()
+            else:
+                print('Location not found.')
         else:
-            print('Location not found.')
+            print('Usage: goto <location>')
     else:
-        print('Command not found. Type "help" or "?" for help.')
+        if not getSpellCheck(command[0], ['help', 'who', 'quit', 'reset', 'goto']) == 0.0:
+            if confirm('Did you mean: ' + getSpellCheck(command[0], ['help', 'who', 'quit', 'reset', 'goto']), True):
+                fixedCommand = [getSpellCheck(command[0],  ['help', 'who', 'quit', 'reset', 'goto'])]
+                for cmd in command[1:]:
+                    fixedCommand.append(cmd)
+                execute(fixedCommand)
+        else:
+            print('Command not found. Type "help" or "?" for help.')
 
 # Get current file path
 fileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
