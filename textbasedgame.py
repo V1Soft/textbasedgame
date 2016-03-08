@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import inspect
 import os
 import readline
@@ -39,11 +40,12 @@ def quitGame():
     print('Progress saved.')
     exit(0)
 
-def newGame():
+def newGame(name=None):
     global usr, usrFile
-    usr = ''
     entities.worldEntities = []
-    while not usr:
+    if name != None:
+        usr = name
+    else:
         try:
             usr = input('What is your desired username? : ')
             usrFile = usr + '.save' # Add extension
@@ -55,36 +57,37 @@ def newGame():
     print('New game set up. Welcome.')
     commandLine()
 
-def loadGame():
+def loadGame(name=None):
     global usr, usrFile, previousVendor
+    users = []
+    for file in os.listdir(utils.fileDir + '/saves'):
+        if file.endswith('.save') or file.endswith('.save.dat') or file.endswith('.db'): 
+            users.append(file.split('.')[0])
     try:
-        users = []
-        for file in os.listdir(utils.fileDir + '/saves'):
-            if file.endswith('.save') or file.endswith('.save.dat') or file.endswith('.db'): 
-                users.append(file.split('.')[0])
-        try:
-            usr = utils.choose('List of users:', users, 'What is your username?')
-            usrFile = usr + '.save'
-        except KeyboardInterrupt:
-            play()
+        usr = utils.choose('List of users:', users, 'What is your username?')
+        usrFile = usr + '.save'
+    except KeyboardInterrupt:
+        play()
+    try:
         entities.worldEntities = utils.loadInfo(usr, 'worldEntities')
         entities.player = utils.loadInfo(usr, 'player.' + usr)
         previousVendor = utils.loadInfo(usr, 'previousVendor')
-        print('Game save loaded.')
-        try:
-            if entities.player.location == entities.getLocation('Inventory'):
-                locations.inventory()
-            elif entities.player.location == entities.getLocation('Market'):
-                utils.goToVendor(previousVendor)
-            elif entities.player.location == entities.getLocation('Interact'):
-                utils.fight(entities.player.location.entity, entities.player.location.entity.weapon)
-                #inventory()
-        except KeyboardInterrupt or EOFError:
-            quitGame()
-        commandLine()
     except KeyError:
-        print('Savefile does not exist or is broken. Creating new savefile...')
-        newGame()
+        print('Savefile is broken. Creating new savefile...')
+        newGame(usr)
+    print('Game save loaded.')
+    try:
+        if entities.player.location == entities.getLocation('Inventory'):
+            locations.inventory()
+        elif entities.player.location == entities.getLocation('Market'):
+            utils.goToVendor(previousVendor)
+        elif entities.player.location == entities.getLocation('Interact'):
+            utils.fight(entities.player.location.entity, entities.player.location.entity.weapon)
+            inventory()
+        else:
+            commandLine()
+    except KeyboardInterrupt or EOFError:
+        sys.exit(1)
 
 def play():
     while True:
