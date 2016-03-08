@@ -58,12 +58,6 @@ def getVendor(name):
             return vendor
     print('Vendor ' + name + ' not found.')
 
-# Arguments:
-argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
-argparser.add_argument('-n', '--new', help='New game', action='store_true')
-argparser.add_argument('-l', '--load-game', help='Load existing game', action='store_true')
-
-args = argparser.parse_args()
 
 # Locations
 locations = [obj.Location('Main', 'Where it all begins.', None), obj.Location('Inventory', 'Your Inventory.', None), obj.Location('Market', 'The Market.', None), obj.Location('Interact', 'Interact with your Surroundings.', None)]
