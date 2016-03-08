@@ -40,29 +40,31 @@ def quitGame():
     exit(0)
 
 def newGame():
-    global usr
+    global usr, usrFile
     usr = ''
     entities.worldEntities = []
     while not usr:
         try:
             usr = input('What is your desired username? : ')
+            usrFile = usr + '.save' # Add extension
         except KeyboardInterrupt:
             play()
     entities.player = obj.Player(usr, 100, 100, float(5))
     entities.player.inventory = [entities.getWeapon('stick'), entities.getFood('potato')]
     entities.player.location = entities.getLocation('Main')
-    print('New Game set up. Welcome.')
+    print('New game set up. Welcome.')
     commandLine()
 
 def loadGame():
-    global usr, previousVendor
+    global usr, usrFile, previousVendor
     try:
         users = []
         for file in os.listdir(utils.fileDir + '/saves'):
-            if (file.endswith('.save') or file.endswith('.save.dat')): 
+            if file.endswith('.save') or file.endswith('.save.dat') or file.endswith('.db'): 
                 users.append(file.split('.')[0])
         try:
             usr = utils.choose('List of users:', users, 'What is your username?')
+            usrFile = usr + '.save'
         except KeyboardInterrupt:
             play()
         entities.worldEntities = utils.loadInfo(usr, 'worldEntities')
