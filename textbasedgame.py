@@ -3,6 +3,8 @@
 import argparse
 import inspect
 import os
+import sys
+
 try:
     import readline 
 except ImportError: # readline doesn't work on iOS
@@ -41,7 +43,7 @@ def quitGame():
     except NameError:
         utils.saveInfo(usr, 'previousVendor', None)
     print('Progress saved.')
-    exit(0)
+    sys.exit(0)
 
 def newGame(name=None):
     global usr, usrFile
@@ -107,15 +109,15 @@ def play():
             elif choice == 'CONTINUE':
                 loadGame()
             elif choice == 'QUIT':
-                exit(0)
+                sys.exit(0)
             else:
                 while True:
                     if utils.confirm('Invalid option. Do you want to quit?'):
-                        exit(0)
+                        sys.exit(0)
                     else:
                         break
         except KeyboardInterrupt or EOFError:
-            exit(0)
+            sys.exit(0)
 
 # Arguments
 argparser = argparse.ArgumentParser(description='A currently unnamed text-based game')
