@@ -1,3 +1,4 @@
+import sys
 import random
 import time
 import readline
@@ -68,7 +69,7 @@ def memory():
                     time.sleep(10)
                 except KeyboardInterrupt:
                     print('\nProgress Lost.')
-                    exit(0)
+                    sys.exit(0)
                 try:
                     while True:
                         command = input('ZZZ : ').split(' ')
