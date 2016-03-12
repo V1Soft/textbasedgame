@@ -269,7 +269,7 @@ def goToVendor(vendor):
             entities.player.location.entity = entities.getLocation('Main')
             return
         elif command[0].upper() == 'HELP':
-            storeHelp.prtMsg()
+            entities.getHelpMsg('Market').printMsg()
         elif command[0].upper() == 'MONEY':
             print(entities.player.money + ' coins')
         else:
